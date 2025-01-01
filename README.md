@@ -1,17 +1,3 @@
-# Astro Starter Kit: Basics
-
-```sh
-npm create astro@latest -- --template basics
-```
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
 ## 🚀 Project Structure
 
 Inside of your Astro project, you'll see the following folders and files:
@@ -43,6 +29,46 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
+## Additional Packages/Tools added (These commands have already been run)
+
+```shell
+pnpm astro add tailwind
+pnpm add --save-dev --save-exact @biomejs/biome
+pnpm biome init
+pnpm add --save-dev lint-staged husky
+pnpm exec husky init
+# See #biome-configuration-notes for additional properties added to biome.json
+
+```
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+## Biome Configuration Notes
+
+The project includes specific linting overrides for `.svelte`, `.astro`, and `.vue` files in `biome.json`. These overrides (disabling `useConst` and `useImportType` rules) are necessary due to limited Astro support as of January 1, 2025. See (Biome language support)[https://biomejs.dev/internals/language-support/#html-super-languages-support] for more information.
+
+## Husky Configuration Notes
+
+A pre-commit hook has been configured in `.husky/pre-commit` that runs lint-staged before each commit. The script:
+- Runs lint-staged to format and lint staged files using Biome
+- Checks the exit status of lint-staged
+- Fails the commit if lint-staged reports any errors
+- Includes helpful error messages to guide developers when linting fails
+
+```shell
+pnpm lint-staged
+lint_status=$?
+
+if [ $lint_status -ne 0 ]; then
+  echo "Lint-staged failed! Please fix the errors and try committing again."
+  exit $lint_status
+fi
+
+# Ensure the script exits with success if everything passed
+exit 0
+```
+
+This ensures that all committed code meets the project's formatting and linting standards.
+

@@ -1,0 +1,10 @@
+pnpm lint-staged
+lint_status=$?
+
+if [ $lint_status -ne 0 ]; then
+  echo "Lint-staged failed! Please fix the errors and try committing again."
+  exit $lint_status
+fi
+
+# Ensure the script exits with success if everything passed
+exit 0

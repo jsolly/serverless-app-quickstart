@@ -1,15 +1,29 @@
 {
-  "name": "static-astro-website",
-  "type": "module",
-  "version": "0.0.1",
-  "license": "MIT",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "astro": "^5.1.1"
-  }
+	"name": "static-astro-website",
+	"type": "module",
+	"version": "0.0.1",
+	"license": "MIT",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"**/*.{js,jsx,ts,tsx,md,mdx,json,astro}": [
+			"biome format --write",
+			"biome lint"
+		]
+	},
+	"dependencies": {
+		"@astrojs/tailwind": "^5.1.4",
+		"astro": "^5.1.1",
+		"tailwindcss": "^3.4.17"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"husky": "^9.1.7",
+		"lint-staged": "^15.3.0"
+	}
 }
