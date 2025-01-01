@@ -1,17 +1,75 @@
 ---
 interface Props {
 	title?: string;
+	description?: string;
 }
 
-const { title = "Change me" } = Astro.props;
+const { title = "Change me", description = "Default description" } =
+	Astro.props;
+
+// Replace with your own image
+const socialImageURL = new URL(
+	"/images/astro-logo-light-gradient.png",
+	Astro.url,
+);
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" />
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="/favicons/apple-touch-icon.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/favicons/favicon-32x32.png"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/favicons/favicon-16x16.png"
+    />
+    <link
+        rel="icon"
+        sizes="192x192"
+        href="/favicons/android-chrome-192x192.png"
+    />
+    <link
+        rel="icon"
+        sizes="512x512"
+        href="/favicons/android-chrome-512x512.png"
+    />
+    <link rel="manifest" href="/favicons/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImageURL} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={socialImageURL} />
   </head>
   <body>
     <slot />
