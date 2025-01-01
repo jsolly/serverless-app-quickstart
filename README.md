@@ -32,7 +32,7 @@ All commands are run from the root of the project, from a terminal:
 ##    Additional Packages/Tools added (These commands have already been run)
 
 ```shell
-pnpm astro add tailwind
+pnpm astro add tailwind sitemap
 pnpm add --save-dev --save-exact @biomejs/biome
 pnpm biome init
 pnpm add --save-dev lint-staged husky
@@ -80,13 +80,12 @@ This ensures that all committed code meets the project's formatting and linting 
 
 ## Lint-staged Configuration Notes
 
-Lint-staged is configured in `package.json` to run `biome format --write` and `biome lint --write` on all staged files. This ensures that all staged files are formatted and linted before each commit. The linter will fix any errors it can (e.g. missing semicolons, etc.) but will not fix errors that require manual intervention (e.g. unused imports, etc.). Test!
+Lint-staged is configured in `package.json` to run `biome check` on all staged files. The configuration uses the `--no-errors-on-unmatched` flag to prevent errors when processing unsupported file types, and `--write` to allow automatic fixes where possible.
 
 ```json
 "lint-staged": {
-  "**/*.{js,jsx,ts,tsx,md,mdx,json,astro}": [
-    "biome format --write",
-    "biome lint --write"
-  ]
+    "*": ["biome check --no-errors-on-unmatched --write"]
 }
 ```
+
+This ensures that all staged files are checked and formatted before each commit, with Biome gracefully handling files it doesn't support. The check command combines both formatting and linting in a single pass.
