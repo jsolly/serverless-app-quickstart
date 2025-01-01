@@ -29,7 +29,7 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## Additional Packages/Tools added (These commands have already been run)
+##    Additional Packages/Tools added (These commands have already been run)
 
 ```shell
 pnpm astro add tailwind
@@ -53,22 +53,28 @@ The project includes specific linting overrides for `.svelte`, `.astro`, and `.v
 
 A pre-commit hook has been configured in `.husky/pre-commit` that runs lint-staged before each commit. The script:
 - Runs lint-staged to format and lint staged files using Biome
+- Provides visual feedback with status messages and emojis
 - Checks the exit status of lint-staged
 - Fails the commit if lint-staged reports any errors
 - Includes helpful error messages to guide developers when linting fails
 
 ```shell
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running pre-commit hook..."
 pnpm lint-staged
 lint_status=$?
 
 if [ $lint_status -ne 0 ]; then
-  echo "Lint-staged failed! Please fix the errors and try committing again."
+  echo "❌ Lint-staged failed! Please fix the errors and try committing again."
   exit $lint_status
 fi
 
+echo "✅ Pre-commit hook completed successfully"
 # Ensure the script exits with success if everything passed
 exit 0
 ```
 
-This ensures that all committed code meets the project's formatting and linting standards.
+This ensures that all committed code meets the project's formatting and linting standards, with clear visual feedback during the commit process.
 
