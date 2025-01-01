@@ -1,4 +1,7 @@
 echo "🚀 Running pre-commit hook..."
+echo "Files to be processed:"
+git diff --cached --name-only
+echo "---"
 pnpm lint-staged
 lint_status=$?
 
@@ -8,5 +11,3 @@ if [ $lint_status -ne 0 ]; then
 fi
 
 echo "✅ Pre-commit hook completed successfully"
-# Ensure the script exits with success if everything passed
-exit 0
