@@ -80,13 +80,13 @@ This ensures that all committed code meets the project's formatting and linting 
 
 ## Lint-staged Configuration Notes
 
-Lint-staged is configured in `package.json` to run `biome format --write` and `biome lint` on all staged files. This ensures that all staged files are formatted and linted before each commit.
+Lint-staged is configured in `package.json` to run `biome format --write` and `biome lint --write` on all staged files. This ensures that all staged files are formatted and linted before each commit. The linter will fix any errors it can (e.g. missing semicolons, etc.) but will not fix errors that require manual intervention (e.g. unused imports, etc.)
 
 ```json
 "lint-staged": {
   "**/*.{js,jsx,ts,tsx,md,mdx,json,astro}": [
-    "biome format --write .",
-    "biome lint ."
+    "biome format --write",
+    "biome lint --write"
   ]
 }
 ```
