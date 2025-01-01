@@ -9,13 +9,14 @@
 		"preview": "astro preview",
 		"astro": "astro",
 		"prepare": "husky",
-		"lint": "biome lint",
+		"lint": "biome lint .",
+		"lint-fix": "biome lint --write .",
 		"format": "biome format --write ."
 	},
 	"lint-staged": {
 		"**/*.{js,jsx,ts,tsx,md,mdx,json,astro}": [
-			"biome format --write .",
-			"biome lint ."
+			"biome format --write",
+			"biome lint --write"
 		]
 	},
 	"dependencies": {

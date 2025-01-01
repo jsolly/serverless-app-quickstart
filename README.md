@@ -78,3 +78,15 @@ exit 0
 
 This ensures that all committed code meets the project's formatting and linting standards, with clear visual feedback during the commit process.
 
+## Lint-staged Configuration Notes
+
+Lint-staged is configured in `package.json` to run `biome format --write` and `biome lint` on all staged files. This ensures that all staged files are formatted and linted before each commit.
+
+```json
+"lint-staged": {
+  "**/*.{js,jsx,ts,tsx,md,mdx,json,astro}": [
+    "biome format --write .",
+    "biome lint ."
+  ]
+}
+```
