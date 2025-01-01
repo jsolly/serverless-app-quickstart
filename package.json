@@ -11,10 +11,11 @@
 		"prepare": "husky",
 		"lint": "biome lint .",
 		"lint-fix": "biome lint --write .",
-		"format": "biome format --write ."
+		"format": "biome format --write .",
+		"check": "biome check --write ."
 	},
 	"lint-staged": {
-		"*": ["biome format --write", "biome lint --write"]
+		"*": ["biome check --write"]
 	},
 	"dependencies": {
 		"@astrojs/tailwind": "^5.1.4",
