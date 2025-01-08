@@ -12,6 +12,7 @@
 		"lint": "biome lint .",
 		"lint-fix": "biome lint --write .",
 		"format": "biome format --write .",
+		"type-check": "tsc --noEmit -p tsconfig.json",
 		"check": "biome check --write ."
 	},
 	"lint-staged": {
