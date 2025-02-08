@@ -35,5 +35,7 @@ jobs:
         run: pnpm run type-check
       - name: Run Astro Check
         run: pnpm run astro check
+      - name: Test
+        run: pnpm run test
       - name: Build application
         run: pnpm run build
