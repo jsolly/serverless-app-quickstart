@@ -21,7 +21,12 @@
 		"check": "biome check --config-path config/biome.json --write ."
 	},
 	"lint-staged": {
-		"*": ["biome check --no-errors-on-unmatched --write"]
+		"*.{js,jsx,ts,tsx,json,astro,vue}": [
+			"npx @biomejs/biome format --config-path config/biome.json --write",
+			"npx @biomejs/biome lint --config-path config/biome.json"
+		],
+		"package-lock.json": ["echo 'Skipping package-lock.json'"],
+		"*.{yml,yaml}": ["echo 'YAML file detected - skipping format checks'"]
 	},
 	"dependencies": {
 		"@astrojs/sitemap": "^3.4.0",
