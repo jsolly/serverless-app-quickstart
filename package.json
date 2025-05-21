@@ -30,14 +30,13 @@
 		"package-lock.json": ["echo 'Skipping package-lock.json'"],
 		"*.{yml,yaml}": ["echo 'YAML file detected - skipping format checks'"]
 	},
-	"dependencies": {
+	"dependencies": {},
+	"devDependencies": {
 		"@astrojs/sitemap": "^3.4.0",
 		"@astrojs/vue": "^5.0.13",
 		"astro": "^5.7.13",
 		"dotenv": "^16.5.0",
-		"tailwindcss": "^4.1.7"
-	},
-	"devDependencies": {
+		"tailwindcss": "^4.1.7",
 		"@astrojs/check": "^0.9.4",
 		"@tailwindcss/vite": "^4.1.7",
 		"@biomejs/biome": "1.9.4",
