@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
-/* :root {
-	--primary: #2563eb; /* blue-600 */
-	--primary-light: #60a5fa; /* blue-400 */
-	--primary-dark: #1d4ed8; /* blue-700 */
-} */
+/* 
+:root {
+	--primary: #000000;
+	--primary-light: #000000;
+	--primary-dark: #000000;
+} 
+*/
 
 html {
 	font-family: "Open Sans", sans-serif;
