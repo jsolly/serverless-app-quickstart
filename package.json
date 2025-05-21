@@ -17,8 +17,6 @@
 		"test": "vitest --config config/vitest.config.ts --no-watch",
 		"generate-images": "node --loader ts-node/esm scripts/svg-to-png.ts",
 		"clean": "rm -rf dist",
-		"build:lambda": "cd shared && npm run build && cd ../functions && ./build.sh",
-		"deploy:lambda": "sam build && sam deploy",
 		"lint-staged": "lint-staged",
 		"check": "biome check --config-path config/biome.json --write ."
 	},
