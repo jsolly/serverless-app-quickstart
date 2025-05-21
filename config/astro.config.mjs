@@ -1,7 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sitemap from "@astrojs/sitemap";
-import vue from "@astrojs/vue";
 import tailwindcss from "@tailwindcss/vite";
 // @ts-nocheck
 import { defineConfig } from "astro/config";
@@ -17,7 +16,7 @@ export default defineConfig({
 		process.env.NODE_ENV === "development"
 			? "http://localhost:4321"
 			: "https://www.example.com",
-	integrations: [sitemap({}), vue()],
+	integrations: [sitemap({})],
 	vite: {
 		plugins: [tailwindcss()],
 	},
