@@ -33,6 +33,8 @@ All commands are run from the root of the project, from a terminal:
 | `npm lint-fix`           | Run Biome linter and fix issues                  |
 | `npm format`             | Format files using Biome                         |
 | `npm check`              | Run Biome checks with auto-fixes                 |
+| `npm outdated`           | Check for outdated packages                     |
+| `npm update`             | Update all packages to the latest versions      |
 
 ## Additional Packages/Tools added (These commands have already been run)
 
