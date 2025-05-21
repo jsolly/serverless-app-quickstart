@@ -1,0 +1,6 @@
+----- This file allows us to use Tailwind CSS classes in HTML that is injected into the DOM (not compiled by Tailwind) 
+We need to do this because the default behavior of Tailwind is to only compile classes that are are available in the 
+DOM at build time. I added bg-green-600 as an example.
+-----
+bg-green-600
+
