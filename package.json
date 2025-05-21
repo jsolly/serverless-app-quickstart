@@ -26,9 +26,9 @@
 		"*": ["biome check --no-errors-on-unmatched --write"]
 	},
 	"dependencies": {
-		"@astrojs/sitemap": "^3.2.1",
-		"@astrojs/tailwind": "^5.1.5",
-		"astro": "^5.1.9",
+		"@astrojs/sitemap": "^3.4.0",
+		"@astrojs/tailwind": "^6.0.2",
+		"astro": "^5.7.13",
 		"tailwindcss": "^3.4.17"
 	},
 	"devDependencies": {
