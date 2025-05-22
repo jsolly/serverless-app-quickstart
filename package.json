@@ -9,11 +9,13 @@
 		"build": "astro check --config config/astro.config.mjs && astro build --config config/astro.config.mjs && node scripts/process-html.mjs",
 		"preview": "astro preview --config config/astro.config.mjs",
 		"astro": "astro --config config/astro.config.mjs",
+		"astro-check": "astro check --config config/astro.config.mjs",
 		"prepare": "if [ -z \"$CI\" ]; then husky; fi",
 		"lint": "biome lint --config-path config/biome.json --no-errors-on-unmatched --files-ignore-unknown=true .",
 		"lint-fix": "biome lint --config-path config/biome.json --write --no-errors-on-unmatched --files-ignore-unknown=true .",
 		"format": "biome format --config-path config/biome.json --no-errors-on-unmatched --files-ignore-unknown=true --write .",
 		"type-check": "tsc --noEmit -p config/tsconfig.json",
+		"validate": "npm run lint && npm run type-check && npm run astro-check && npm run build",
 		"test": "vitest --config config/vitest.config.ts --no-watch",
 		"generate-images": "node --loader ts-node/esm scripts/svg-to-png.ts",
 		"clean": "rm -rf dist",
@@ -30,20 +32,22 @@
 		"package-lock.json": ["echo 'Skipping package-lock.json'"],
 		"*.{yml,yaml}": ["echo 'YAML file detected - skipping format checks'"]
 	},
-	"dependencies": {},
 	"devDependencies": {
+		"@astrojs/check": "^0.9.4",
 		"@astrojs/sitemap": "^3.4.0",
+		"@biomejs/biome": "1.9.4",
+		"@tailwindcss/vite": "^4.1.7",
 		"astro": "^5.7.13",
 		"dotenv": "^16.5.0",
-		"tailwindcss": "^4.1.7",
-		"@astrojs/check": "^0.9.4",
-		"@tailwindcss/vite": "^4.1.7",
-		"@biomejs/biome": "1.9.4",
+		"globby": "^14.0.2",
+		"html-minifier": "^4.0.0",
 		"husky": "^9.1.7",
+		"jsdom": "^25.0.0",
 		"lint-staged": "^16.0.0",
+		"tailwindcss": "^4.1.7",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.8.3",
-		"vitest": "^3.1.4",
-		"vite": "^6.3.5"
+		"vite": "^6.3.5",
+		"vitest": "^3.1.4"
 	}
 }
