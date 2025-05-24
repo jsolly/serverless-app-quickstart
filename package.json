@@ -11,31 +11,35 @@
 		"astro": "astro --config config/astro.config.mjs",
 		"astro-check": "astro check --config config/astro.config.mjs",
 		"prepare": "if [ -z \"$CI\" ]; then husky; fi",
-		"lint": "biome lint --config-path config/biome.json --no-errors-on-unmatched --files-ignore-unknown=true .",
-		"lint-fix": "biome lint --config-path config/biome.json --write --no-errors-on-unmatched --files-ignore-unknown=true .",
-		"format": "biome format --config-path config/biome.json --no-errors-on-unmatched --files-ignore-unknown=true --write .",
+		"lint": "biome lint --config-path config/biome.jsonc --no-errors-on-unmatched .",
+		"lint-fix": "biome lint --config-path config/biome.jsonc --write --no-errors-on-unmatched .",
+		"format": "biome format --config-path config/biome.jsonc --no-errors-on-unmatched --write .",
 		"type-check": "tsc --noEmit -p config/tsconfig.json",
 		"validate": "npm run lint && npm run type-check && npm run astro-check && npm run build",
 		"test": "vitest --config config/vitest.config.ts --no-watch",
 		"generate-images": "node --loader ts-node/esm scripts/svg-to-png.ts",
 		"clean": "rm -rf dist",
 		"lint-staged": "lint-staged",
-		"check": "biome check --config-path config/biome.json --write .",
+		"check": "biome check --config-path config/biome.jsonc --write .",
 		"outdated": "npm outdated",
 		"update": "npx npm-check-updates -u && npm install"
 	},
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx,json,astro,vue}": [
-			"npx @biomejs/biome format --config-path config/biome.json --write",
-			"npx @biomejs/biome lint --config-path config/biome.json"
+		"*.{ts,mts,tsx,json,astro}": [
+			"npx @biomejs/biome format --config-path config/biome.jsonc --write --no-errors-on-unmatched",
+			"npx @biomejs/biome lint --config-path config/biome.jsonc --no-errors-on-unmatched"
 		],
-		"package-lock.json": ["echo 'Skipping package-lock.json'"],
-		"*.{yml,yaml}": ["echo 'YAML file detected - skipping format checks'"]
+		"package-lock.json": [
+			"echo 'Skipping package-lock.json'"
+		],
+		"*.{yml,yaml}": [
+			"echo 'YAML file detected - skipping format checks'"
+		]
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.4",
 		"@astrojs/sitemap": "^3.4.0",
-		"@biomejs/biome": "1.9.4",
+		"@biomejs/biome": "2.0.0-beta.5",
 		"@tailwindcss/vite": "^4.1.7",
 		"astro": "^5.7.13",
 		"dotenv": "^16.5.0",
