@@ -16,7 +16,6 @@
 		"type-check": "tsc --noEmit -p config/tsconfig.json",
 		"validate": "npm run check && npm run type-check && npm run astro-check",
 		"test": "vitest --config config/vitest.config.ts --no-watch",
-		"generate-images": "node --loader ts-node/esm scripts/svg-to-png.ts",
 		"clean": "rm -rf dist",
 		"check": "biome check --config-path config/biome.jsonc --write .",
 		"outdated": "npm outdated",
