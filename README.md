@@ -42,7 +42,8 @@ All commands are run from the root of the project, from a terminal:
 | `npm lint`               | Run Biome linter                                 |
 | `npm lint-fix`           | Run Biome linter and fix issues                  |
 | `npm format`             | Format files using Biome                         |
-| `npm check`              | Run Biome checks with auto-fixes                 |
+| `npm check`              | Run Biome formatting and linting checks         |
+| `npm check:fix`          | Run Biome formatting and linting checks and fix issues |
 | `npm type-check`         | Run TypeScript type checking                     |
 | `npm validate`           | Run all checks                                   |
 | `npm outdated`           | Check for outdated packages                     |

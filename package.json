@@ -17,7 +17,8 @@
 		"validate": "npm run check && npm run type-check && npm run astro-check",
 		"test": "vitest --config config/vitest.config.ts --no-watch",
 		"clean": "rm -rf dist",
-		"check": "biome check --config-path config/biome.jsonc --write .",
+		"check": "biome check --config-path config/biome.jsonc .",
+		"check:fix": "biome check --config-path config/biome.jsonc --write .",
 		"outdated": "npm outdated",
 		"update": "npx npm-check-updates -u && npm install"
 	},
