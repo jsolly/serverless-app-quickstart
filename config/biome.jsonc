@@ -7,6 +7,10 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["src/**/*.{ts,tsx,mts,json}", "tests/**/*.{ts,tsx,mts,json}"]
+		"includes": [
+			"src/**/*.{ts,tsx,mts,json}",
+			"tests/**/*.{ts,tsx,mts,json}",
+			"scripts/**/*.{mjs}"
+		]
 	}
 }
