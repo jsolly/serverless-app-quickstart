@@ -24,11 +24,6 @@
 		"outdated": "npm outdated",
 		"update": "npx npm-check-updates -u && npm install"
 	},
-	"lint-staged": {
-		"*.{ts,mts,tsx,json,astro}": [
-			"npx @biomejs/biome check --write --staged --config-path config/biome.jsonc --no-errors-on-unmatched --files-ignore-unknown=true"
-		]
-	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.4",
 		"@astrojs/sitemap": "^3.4.0",
@@ -40,7 +35,6 @@
 		"html-minifier": "^4.0.0",
 		"husky": "^9.1.7",
 		"jsdom": "^25.0.0",
-		"lint-staged": "^16.0.0",
 		"tailwindcss": "^4.1.7",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.8.3",
