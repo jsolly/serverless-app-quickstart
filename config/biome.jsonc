@@ -7,6 +7,6 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["src/**/*.{ts,tsx,mts}", "tests/**/*.{ts,tsx,mts}"]
+		"includes": ["src/**/*.{ts,tsx,mts,json}", "tests/**/*.{ts,tsx,mts,json}"]
 	}
 }
