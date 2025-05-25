@@ -26,14 +26,7 @@
 	},
 	"lint-staged": {
 		"*.{ts,mts,tsx,json,astro}": [
-			"npx @biomejs/biome format --config-path config/biome.jsonc --write --no-errors-on-unmatched",
-			"npx @biomejs/biome lint --config-path config/biome.jsonc --no-errors-on-unmatched"
-		],
-		"package-lock.json": [
-			"echo 'Skipping package-lock.json'"
-		],
-		"*.{yml,yaml}": [
-			"echo 'YAML file detected - skipping format checks'"
+			"npx @biomejs/biome check --config-path config/biome.jsonc --no-errors-on-unmatched --files-ignore-unknown=true"
 		]
 	},
 	"devDependencies": {
