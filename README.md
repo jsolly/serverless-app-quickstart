@@ -1,4 +1,4 @@
-# Static Astro Website
+# App Quickstart ⚡️
 
 ## 🚀 Project Structure
 
