@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import { globby } from "globby";
-import { minify } from "html-minifier";
 import { JSDOM } from "jsdom";
 
 // Get all HTML files from the output directory
@@ -27,12 +26,6 @@ await Promise.all(
 		}
 		html = dom.serialize();
 
-		// Minify the HTML
-		html = minify(html, {
-			removeComments: true,
-			preserveLineBreaks: true,
-			collapseWhitespace: true,
-		});
 		await fs.writeFile(file, html);
 	}),
 );
