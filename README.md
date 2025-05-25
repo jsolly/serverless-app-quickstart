@@ -60,7 +60,7 @@ npm exec husky init
 
 ## Husky Configuration Notes
 
-A pre-commit hook has been configured in `.husky/pre-commit` that runs `biome check` on all staged files.
+A pre-commit hook has been configured in `.husky/pre-commit` that runs `npm run validate` on all staged files.
 
 ## Additional Resources
 
