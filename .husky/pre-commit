@@ -1,13 +1,7 @@
 #!/bin/sh
 
 # Run linting and formatting
-npm run lint-staged
-lint_status=$?
-
-if [ $lint_status -ne 0 ]; then
-  echo "Lint-staged failed! Please fix the errors and try committing again."
-  exit $lint_status
-fi
+npm run check --write --staged --config-path config/biome.jsonc --no-errors-on-unmatched --files-ignore-unknown=true
 
 # Run Typechecking
 npm run type-check
