@@ -12,16 +12,17 @@
 		"prepare": "if [ -z \"$CI\" ]; then husky; fi",
 		"lint": "biome lint --config-path config/biome.jsonc --no-errors-on-unmatched",
 		"format": "biome format --config-path config/biome.jsonc --no-errors-on-unmatched --write",
-		"validate": "npm run check:biome && npm run check:typescript && npm run check:astro",
 		"test": "vitest --config config/vitest.config.ts --no-watch",
 		"test:unit": "vitest --config config/vitest.config.ts --no-watch -t 'unit'",
-		"clean": "rm -rf dist",
 		"check:biome": "biome check --config-path config/biome.jsonc",
 		"check:typescript": "tsc --noEmit -p config/tsconfig.json",
 		"check:astro": "astro check --config config/astro.config.mjs",
+		"check:terraform": "terraform validate",
 		"check:fix": "biome check --config-path config/biome.jsonc --write",
+		"clean": "rm -rf dist",
 		"outdated": "npm outdated",
-		"update": "npx npm-check-updates -u && npm install"
+		"update": "npx npm-check-updates -u && npm install",
+		"validate": "npm run check:biome && npm run check:typescript && npm run check:astro && npm run check:terraform"
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.4",

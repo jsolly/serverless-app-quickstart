@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -12,9 +13,6 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [22]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,11 +21,15 @@ jobs:
       #   with:
       #     role-to-assume: arn:aws:iam::730335616323:role/GitHubActionsDeploymentRole
       #     aws-region: us-east-1
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Read Node.js version
+        id: node_version
+        run: echo "version=$(cat config/.nvmrc | tr -d ' \n')" >> $GITHUB_OUTPUT
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ steps.node_version.outputs.version }}
           cache: "npm"
+          cache-dependency-path: 'package-lock.json'
       - name: Install dependencies
         run: npm ci
       - name: Lint
@@ -37,6 +39,15 @@ jobs:
 
       - name: Check Astro
         run: npm run check:astro
+      - name: Read Terraform version
+        id: tf_version
+        run: echo "version=$(cat config/.terraform-version | tr -d ' \n')" >> $GITHUB_OUTPUT
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ steps.tf_version.outputs.version }}
+      - name: Run Terraform Validation
+        run: npm run check:terraform
       - name: Test
         run: npm run test
       - name: Build application
