@@ -28,9 +28,9 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Deep Type check
-        run: npm run type-check
+        run: npm run check:typescript
       - name: Run Astro Check
-        run: npm run astro check
+        run: npm run check:astro
       - name: Test
         run: npm run test
       - name: Build application
