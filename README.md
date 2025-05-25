@@ -54,13 +54,13 @@ All commands are run from the root of the project, from a terminal:
 npm astro add tailwind sitemap
 npm add --save-dev --save-exact @biomejs/biome
 npm biome init
-npm add --save-dev lint-staged husky
+npm add --save-dev husky
 npm exec husky init
 ```
 
-## Husky Configuration Notes
+## Pre-commit Hook Configuration
 
-A pre-commit hook has been configured in `.husky/pre-commit` that runs `npm run validate` on all staged files.
+A pre-commit hook has been configured in `.husky/pre-commit` that runs biome check, tsc and astro check before each commit to format, lint and type check the code.
 
 ## Additional Resources
 

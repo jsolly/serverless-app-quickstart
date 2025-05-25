@@ -1,7 +1,9 @@
 #!/bin/sh
 
 # Run linting and formatting
-npm run validate
+npx biome check --config-path config/biome.jsonc --write --staged --no-errors-on-unmatched --files-ignore-unknown=true
+npx tsc --noEmit -p config/tsconfig.json
+npx astro check --config config/astro.config.mjs
 
 # Ensure the script exits with success if everything passed
 exit 0
