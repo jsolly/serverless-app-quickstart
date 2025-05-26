@@ -16,6 +16,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+      - name: Run Biome
+        run: biome ci .
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v4
       #   with:
@@ -32,8 +38,6 @@ jobs:
           cache-dependency-path: 'package-lock.json'
       - name: Install dependencies
         run: npm ci
-      - name: Lint
-        run: npm run lint
       - name: Deep Type check
         run: npm run check:typescript
 

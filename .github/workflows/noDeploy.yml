@@ -16,6 +16,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: Run Biome
+        run: biome ci .
+
       - name: Read Node.js version
         id: node_version
         run: echo "version=$(cat config/.nvmrc | tr -d ' \n')" >> $GITHUB_OUTPUT
@@ -29,9 +37,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Lint
-        run: npm run lint
 
       - name: Deep Type check
         run: npm run check:typescript
