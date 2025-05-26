@@ -21,7 +21,7 @@ jobs:
         with:
           version: 2.0.0-beta.5
       - name: Run Biome
-        run: biome ci .
+        run: biome ci . --config-path config/biome.jsonc
       # - name: Configure AWS Credentials
       #   uses: aws-actions/configure-aws-credentials@v4
       #   with:
