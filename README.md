@@ -14,12 +14,10 @@ Inside of your Astro project, you'll see the following folders and files:
 │   └── pages/
 │       └── index.astro
 ├── config/
-│   ├── astro.config.mjs
+│   ├── astro.config.ts
 │   ├── biome.jsonc
 │   ├── tsconfig.json
 │   └── vitest.config.ts
-├── scripts/
-│   ├── process-html.mjs
 ├── tests/
 ├── .husky/
 │   └── pre-commit.sh
