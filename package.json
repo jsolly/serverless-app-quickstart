@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "astro dev --config config/astro.config.ts",
 		"start": "astro dev --config config/astro.config.ts",
-		"build": "astro check --config config/astro.config.ts && astro build --config config/astro.config.ts && node --loader ts-node/esm scripts/process-html.mts",
+		"build": "astro check --config config/astro.config.ts && astro build --config config/astro.config.ts",
 		"preview": "astro preview --config config/astro.config.ts",
 		"astro": "astro --config config/astro.config.ts",
 		"prepare": "if [ -z \"$CI\" ]; then husky; fi",
