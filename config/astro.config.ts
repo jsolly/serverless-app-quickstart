@@ -2,7 +2,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
-// @ts-nocheck
 import { defineConfig } from "astro/config";
 import dotenv from "dotenv";
 
