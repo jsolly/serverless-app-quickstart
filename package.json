@@ -14,7 +14,7 @@
 		"format": "biome format --config-path config/biome.jsonc --no-errors-on-unmatched --write",
 		"test": "vitest --config config/vitest.config.ts --no-watch",
 		"test:unit": "vitest --config config/vitest.config.ts --no-watch -t 'unit'",
-		"check:biome": "biome check --config-path config/biome.jsonc",
+		"check:biome": "biome check --config-path config/biome.jsonc --no-errors-on-unmatched",
 		"check:biome:staged": "biome check --config-path config/biome.jsonc --staged --no-errors-on-unmatched",
 		"check:typescript": "tsc --noEmit -p config/tsconfig.json",
 		"check:astro": "astro check --config config/astro.config.ts",
