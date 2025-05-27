@@ -10,7 +10,8 @@
 		"includes": [
 			"src/**/*.{ts,tsx,mts,json}",
 			"tests/**/*.{ts,tsx,mts,json}",
-			"scripts/**/*.{mjs}"
+			"scripts/**/*.{mts}",
+			"config/**/*.{json,jsonc,ts,mjs}"
 		]
 	}
 }

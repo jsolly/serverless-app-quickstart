@@ -1,7 +1,8 @@
 /// <reference types="vitest" />
-import { defineConfig } from "vite";
-import { config } from "dotenv";
+
 import { resolve } from "node:path";
+import { config } from "dotenv";
+import { defineConfig } from "vite";
 
 // Load environment variables from .env file
 config({ path: resolve(__dirname, "../.env") });
