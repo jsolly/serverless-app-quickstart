@@ -11,7 +11,7 @@
 			"src/**/*.{ts,tsx,mts,json}",
 			"tests/**/*.{ts,tsx,mts,json}",
 			"scripts/**/*.{mts}",
-			"config/**/*.{json,jsonc,ts,mjs}"
+			"config/**/*.{json,jsonc,ts}"
 		]
 	}
 }
