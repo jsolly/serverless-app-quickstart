@@ -27,15 +27,12 @@ jobs:
       #   with:
       #     role-to-assume: arn:aws:iam::730335616323:role/GitHubActionsDeploymentRole
       #     aws-region: us-east-1
-      - name: Read Node.js version
-        id: node_version
-        run: echo "version=$(cat config/.nvmrc | tr -d ' \n')" >> $GITHUB_OUTPUT
-      - name: Setup Node.js
+      - name: Setup Node.js from .nvmrc
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ steps.node_version.outputs.version }}
-          cache: "npm"
-          cache-dependency-path: 'package-lock.json'
+          node-version-file: config/.nvmrc
+          cache: npm
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Deep Type check
