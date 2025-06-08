@@ -1,5 +1,14 @@
 # App Quickstart ⚡️
 
+## Dependencies
+
+- [Astro](https://astro.build/)
+- [Biome](https://biomejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Vitest](https://vitest.dev/)
+- [Husky](https://typicode.github.io/husky/)
+- [Terraform](https://www.terraform.io/) # I use tfenv to manage my terraform versions
+
 ## 🚀 Project Structure
 
 Inside of your Astro project, you'll see the following folders and files:
