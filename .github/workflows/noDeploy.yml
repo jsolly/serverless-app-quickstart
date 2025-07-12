@@ -1,9 +1,7 @@
 name: No Deploy (Test and Build)
 
 on:
-  # Run on pull requests targeting main
   pull_request:
-    branches: [main]
 
 jobs:
   testAndBuild:
