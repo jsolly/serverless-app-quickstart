@@ -21,7 +21,7 @@ jobs:
         with:
           version: 2.0.6
       - name: Run Biome
-        run: npx biome ci .
+        run: biome ci .
       - name: Setup Node.js from .nvmrc
         uses: actions/setup-node@v4
         with:
