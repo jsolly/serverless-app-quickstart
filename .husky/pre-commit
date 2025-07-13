@@ -12,8 +12,8 @@ trap error_handler ERR
 echo "Running Biome lint/format..."
 npm run check:changed:fix
 
-# echo "Running TypeScript type check..."
-# npm run check:ts
+echo "Running TypeScript type check..."
+npm run check:ts
 
 echo "Running Terraform validate..."
 npm run check:iac
