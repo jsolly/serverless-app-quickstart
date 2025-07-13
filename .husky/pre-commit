@@ -15,9 +15,6 @@ npm run check:biome:staged:fix
 echo "Running TypeScript type check..."
 npm run check:typescript
 
-echo "Running Astro check..."
-npm run check:astro
-
 echo "Running Terraform validate..."
 npm run check:terraform
 

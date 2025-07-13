@@ -22,11 +22,11 @@ Inside of your Astro project, you'll see the following folders and files:
 │   │   └── Layout.astro
 │   └── pages/
 │       └── index.astro
-├── config/
-│   ├── astro.config.ts
-│   ├── biome.jsonc
-│   ├── tsconfig.json
-│   └── vitest.config.ts
+├── astro.config.ts
+├── biome.jsonc
+├── tsconfig.json
+├── vitest.config.ts
+├── .nvmrc
 ├── tests/
 ├── .husky/
 │   └── pre-commit.sh
