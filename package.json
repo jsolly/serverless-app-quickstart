@@ -15,7 +15,7 @@
 		"test": "vitest --no-watch",
 		"test:unit": "vitest --no-watch -t 'unit'",
 		"check:biome": "biome check --no-errors-on-unmatched",
-		"check:biome:staged:fix": "biome check --staged --no-errors-on-unmatched --write",
+		"check:biome:staged:fix": "biome check --changed --no-errors-on-unmatched --write",
 		"check:typescript": "tsc --noEmit",
 		"check:astro": "astro check",
 		"check:terraform": "terraform validate",
