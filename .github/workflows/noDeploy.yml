@@ -13,10 +13,10 @@ jobs:
       - name: Setup Biome
         uses: biomejs/setup-biome@v2
         with:
-          version: 2.0.0-beta.5
+          version: 2.0.6
 
       - name: Run Biome
-        run: npx biome ci . --config-path biome.jsonc
+        run: npx biome ci .
 
       - name: Setup Node.js from .nvmrc
         uses: actions/setup-node@v4
@@ -29,10 +29,7 @@ jobs:
         run: npm ci
 
       - name: Deep Type check
-        run: npm run check:typescript
-
-      - name: Run Astro Check
-        run: npm run check:astro
+        run: npm run check:ts
 
       - name: Read Terraform version
         id: tf_version
@@ -44,10 +41,10 @@ jobs:
           terraform_version: ${{ steps.tf_version.outputs.version }}
 
       - name: Run Terraform Validation
-        run: npm run check:terraform
+        run: npm run check:iac
 
       - name: Test
-        run: npm run test
+        run: npm run test:unit
 
       - name: Build application
         run: npm run build
