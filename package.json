@@ -19,8 +19,10 @@
 		"outdated": "npm outdated",
 		"update": "npx npm-check-updates -u && npm install"
 	},
+	"dependencies": {},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.4",
+		"@astrojs/ts-plugin": "^1.10.4",
 		"@astrojs/sitemap": "^3.4.1",
 		"@biomejs/biome": "^2.0.6",
 		"@tailwindcss/vite": "^4.1.11",
