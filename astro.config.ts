@@ -12,7 +12,6 @@ export default defineConfig({
 	integrations: [sitemap({})],
 
 	vite: {
-		// @ts-expect-error - TailwindCSS Vite plugin type incompatibility
 		plugins: [tailwindcss()],
 	},
 });
