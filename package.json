@@ -11,7 +11,7 @@
 		"lint": "biome lint --no-errors-on-unmatched",
 		"format": "biome format --no-errors-on-unmatched --write",
 		"test:unit": "vitest --no-watch -t 'unit'",
-		"check:changed:fix": "biome check --changed --no-errors-on-unmatched --write",
+		"check:staged:fix": "biome check --staged --write --no-errors-on-unmatched",
 		"check:ts": "tsc --noEmit",
 		"check:iac": "terraform validate",
 		"check:fix": "biome check --write --no-errors-on-unmatched",
