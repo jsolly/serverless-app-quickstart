@@ -12,6 +12,16 @@ trap error_handler ERR
 echo "Running Biome lint/format..."
 npm run check:staged:fix
 
+# Check if formatting created any changes and commit them
+if ! git diff --quiet; then
+  echo "Formatting changes detected. Creating format commit..."
+  git add .
+  git commit -m "chore: format code [auto-generated]"
+  echo "✓ Format commit created"
+else
+  echo "✓ No formatting changes needed"
+fi
+
 echo "Running TypeScript type check..."
 npm run check:ts
 
@@ -23,3 +33,5 @@ npm run test:unit
 
 
 exit 0
+
+
