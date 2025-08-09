@@ -8,8 +8,6 @@
 		"build": "astro build",
 		"preview": "astro preview",
 		"prepare": "if [ -z \"$CI\" ]; then husky; fi",
-		"lint": "biome lint --no-errors-on-unmatched",
-		"format": "biome format --no-errors-on-unmatched --write",
 		"test:unit": "vitest --no-watch -t 'unit'",
 		"check:staged:fix": "biome check --staged --write --no-errors-on-unmatched",
 		"check:ts": "tsc --noEmit",
