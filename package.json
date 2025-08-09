@@ -9,7 +9,6 @@
 		"preview": "astro preview",
 		"prepare": "if [ -z \"$CI\" ]; then husky; fi",
 		"test:unit": "vitest --no-watch -t 'unit'",
-		"check:staged:fix": "biome check --staged --write --no-errors-on-unmatched",
 		"check:ts": "tsc --noEmit",
 		"check:iac": "terraform validate",
 		"check:fix": "biome check --write --no-errors-on-unmatched",
