@@ -16,6 +16,11 @@
 		"outdated": "npm outdated",
 		"update": "npx npm-check-updates -u && npm install"
 	},
+	"lint-staged": {
+		"*.{ts,tsx,js,jsx,json,css,md,yml,yaml}": [
+			"biome check --write --no-errors-on-unmatched"
+		]
+	},
 	"dependencies": {},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.4",
