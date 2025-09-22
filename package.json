@@ -28,7 +28,7 @@
 		"@astrojs/sitemap": "^3.5.1",
 		"@biomejs/biome": "2.2.4",
 		"@tailwindcss/vite": "^4.1.13",
-		"astro": "^5.13.7",
+		"astro": "^5.13.10",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.1.5",
 		"tailwindcss": "^4.1.13",
