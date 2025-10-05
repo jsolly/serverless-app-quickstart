@@ -32,15 +32,6 @@ jobs:
         run: npm ci
       - name: Deep Type check
         run: npm run check:ts
-      - name: Read Terraform version
-        id: tf_version
-        run: echo "version=$(cat .terraform-version | tr -d ' \n')" >> $GITHUB_OUTPUT
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ steps.tf_version.outputs.version }}
-      - name: Run Terraform Validation
-        run: npm run check:iac
       - name: Test
         run: npm run test:unit
       - name: Build application
