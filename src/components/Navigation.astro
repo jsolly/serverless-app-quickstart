@@ -1,0 +1,53 @@
+---
+interface Props {
+  user?: any;
+  isAuthenticated: boolean;
+  showLogo?: boolean;
+}
+
+const { user, isAuthenticated, showLogo = true } = Astro.props;
+---
+
+<nav class="bg-white shadow-sm border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+    <div class="flex justify-between h-20">
+      {showLogo && (
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <a href="/" class="text-2xl font-bold text-gray-900">YourApp</a>
+          </div>
+        </div>
+      )}
+      <div class="flex items-center space-x-6">
+        {isAuthenticated ? (
+          <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-700">Welcome, {user?.email}</span>
+            <form action="/api/auth/signout" method="post" class="inline">
+              <button 
+                type="submit" 
+                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-md text-sm font-medium transition-colors"
+              >
+                Sign Out
+              </button>
+            </form>
+          </div>
+        ) : (
+          <div class="flex items-center space-x-4">
+            <a 
+              href="/signin" 
+              class="text-gray-700 hover:text-gray-900 px-4 py-2.5 rounded-md text-sm font-medium"
+            >
+              Sign In
+            </a>
+            <a 
+              href="/register" 
+              class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-md text-sm font-medium transition-colors"
+            >
+              Get Started
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</nav>
