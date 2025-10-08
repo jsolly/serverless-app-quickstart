@@ -4,6 +4,8 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
+	output: "server",
+
 	site:
 		process.env.NODE_ENV === "development"
 			? "http://localhost:4321"

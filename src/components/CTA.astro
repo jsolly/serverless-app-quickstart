@@ -1,0 +1,29 @@
+---
+interface Props {
+  isAuthenticated: boolean;
+}
+
+const { isAuthenticated } = Astro.props;
+---
+
+<div class="bg-blue-700">
+  <div class="max-w-3xl mx-auto text-center py-20 px-6 sm:py-24 sm:px-8 lg:px-12">
+    <h2 class="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl leading-tight">
+      <span class="block">Ready to start building?</span>
+      <span class="block">Get started today.</span>
+    </h2>
+    <p class="mt-6 text-xl leading-relaxed text-blue-200">
+      Clone this template and start building your next serverless application.
+    </p>
+    {!isAuthenticated && (
+      <div class="mt-10">
+        <a 
+          href="/register" 
+          class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-blue-600 bg-white hover:bg-blue-50 shadow-lg hover:shadow-xl transition-all duration-200"
+        >
+          Get started for free
+        </a>
+      </div>
+    )}
+  </div>
+</div>

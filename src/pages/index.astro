@@ -1,10 +1,39 @@
 ---
-import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
+import Navigation from "../components/Navigation.astro";
+import Hero from "../components/Hero.astro";
+import Features from "../components/Features.astro";
+import CTA from "../components/CTA.astro";
+import { supabase } from "../lib/supabase";
+
+const accessToken = Astro.cookies.get("sb-access-token");
+const refreshToken = Astro.cookies.get("sb-refresh-token");
+
+let user = null;
+let isAuthenticated = false;
+
+if (accessToken && refreshToken) {
+  try {
+    const { data, error } = await supabase.auth.setSession({
+      refresh_token: refreshToken.value,
+      access_token: accessToken.value,
+    });
+    
+    if (!error && data.user) {
+      user = data.user;
+      isAuthenticated = true;
+    }
+  } catch (error) {
+    // Session invalid, user will see sign in button
+  }
+}
 ---
 
-<Layout title="Welcome" description="Welcome to my website">
-  <div class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
-    <Welcome />
+<Layout title="Serverless App Quickstart" description="A modern serverless application template built with Astro and Supabase">
+  <div class="min-h-screen bg-white">
+    <Navigation user={user} isAuthenticated={isAuthenticated} />
+    <Hero isAuthenticated={isAuthenticated} />
+    <Features />
+    <CTA isAuthenticated={isAuthenticated} />
   </div>
 </Layout>
