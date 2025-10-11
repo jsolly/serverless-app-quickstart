@@ -3,9 +3,10 @@ interface Props {
   user?: any;
   isAuthenticated: boolean;
   showLogo?: boolean;
+  hideActions?: boolean;
 }
 
-const { user, isAuthenticated, showLogo = true } = Astro.props;
+const { user, isAuthenticated, showLogo = true, hideActions = false } = Astro.props;
 ---
 
 <nav class="bg-white shadow-sm border-b border-gray-200">
@@ -18,37 +19,39 @@ const { user, isAuthenticated, showLogo = true } = Astro.props;
           </div>
         </div>
       )}
-      <div class="flex items-center space-x-6">
-        {isAuthenticated ? (
-          <div class="flex items-center space-x-4">
-            <a 
-              href="/profile"
-              class="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-            >
-              <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                {user?.email?.charAt(0).toUpperCase()}
-              </div>
-            </a>
-            <form action="/api/auth/signout" method="post" class="inline">
-              <button 
-                type="submit" 
-                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-md text-sm font-medium transition-colors cursor-pointer"
+      {!hideActions && (
+        <div class="flex items-center space-x-6">
+          {isAuthenticated ? (
+            <div class="flex items-center space-x-4">
+              <a 
+                href="/profile"
+                class="flex items-center space-x-3 hover:opacity-80 transition-opacity"
               >
-                Sign Out
-              </button>
-            </form>
-          </div>
-        ) : (
-          <div class="flex items-center space-x-4">
-            <a 
-              href="/register" 
-              class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-md text-sm font-medium transition-colors"
-            >
-              Get Started
-            </a>
-          </div>
-        )}
-      </div>
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                  {user?.email?.charAt(0).toUpperCase()}
+                </div>
+              </a>
+              <form action="/api/auth/signout" method="post" class="inline">
+                <button 
+                  type="submit" 
+                  class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-md text-sm font-medium transition-colors cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div class="flex items-center space-x-4">
+              <a 
+                href="/register" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-md text-sm font-medium transition-colors"
+              >
+                Get Started
+              </a>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   </div>
 </nav>

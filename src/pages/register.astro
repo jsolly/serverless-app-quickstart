@@ -1,10 +1,26 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Navigation from "../components/Navigation.astro";
 ---
 
 <Layout title="Register">
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
+  <div class="min-h-screen bg-gray-50">
+    <Navigation isAuthenticated={false} hideActions={true} />
+    
+    <div class="max-w-3xl mx-auto px-6 py-12">
+      <div class="mb-6">
+        <a
+          href="/"
+          class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Home
+        </a>
+      </div>
+
+      <div class="max-w-md mx-auto space-y-8">
       <div>
         <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Register</h1>
         <p class="mt-2 text-center text-sm text-gray-600">
@@ -47,6 +63,7 @@ import Layout from "../layouts/Layout.astro";
           </button>
         </div>
       </form>
+      </div>
     </div>
   </div>
 </Layout>
