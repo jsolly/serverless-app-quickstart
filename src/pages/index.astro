@@ -12,7 +12,7 @@ const isAuthenticated = !!user;
 
 <Layout title="Serverless App Quickstart" description="A modern serverless application template built with Astro and Supabase">
   <div class="min-h-screen bg-white">
-    <Navigation user={user} isAuthenticated={isAuthenticated} />
+    <Navigation user={user} />
     
     {!isAuthenticated ? (
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

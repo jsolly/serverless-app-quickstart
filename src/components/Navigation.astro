@@ -1,46 +1,50 @@
 ---
 interface Props {
   user?: any;
-  isAuthenticated: boolean;
-  showLogo?: boolean;
-  hideActions?: boolean;
 }
 
-const { user, isAuthenticated, showLogo = true, hideActions = false } = Astro.props;
+const { user } = Astro.props;
+const currentPage = Astro.url.pathname;
 ---
 
 <nav class="bg-white shadow-sm border-b border-gray-200">
   <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
     <div class="flex justify-between h-20">
-      {showLogo && (
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <a href="/" class="text-2xl font-bold text-gray-900">YourApp</a>
-          </div>
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <a href={user ? "/dashboard" : "/"} class="text-2xl font-bold text-gray-900">YourApp</a>
         </div>
-      )}
-      {!hideActions && (
-        <div class="flex items-center space-x-6">
-          {isAuthenticated ? (
-            <div class="flex items-center space-x-4">
+      </div>
+      <div class="flex items-center space-x-6">
+        {user ? (
+          <div class="flex items-center space-x-4">
+            {currentPage !== "/dashboard" && (
               <a 
-                href="/profile"
-                class="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+                href="/dashboard"
+                class="text-gray-700 hover:text-gray-900 px-4 py-2 text-sm font-medium transition-colors"
               >
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-                  {user?.email?.charAt(0).toUpperCase()}
-                </div>
+                Dashboard
               </a>
-              <form action="/api/auth/signout" method="post" class="inline">
-                <button 
-                  type="submit" 
-                  class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-md text-sm font-medium transition-colors cursor-pointer"
-                >
-                  Sign Out
-                </button>
-              </form>
-            </div>
-          ) : (
+            )}
+            <a 
+              href="/profile"
+              class="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+            >
+              <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                {user?.email?.charAt(0).toUpperCase()}
+              </div>
+            </a>
+            <form action="/api/auth/signout" method="post" class="inline">
+              <button 
+                type="submit" 
+                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-md text-sm font-medium transition-colors cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </form>
+          </div>
+        ) : (
+          currentPage !== "/register" && (
             <div class="flex items-center space-x-4">
               <a 
                 href="/register" 
@@ -49,9 +53,9 @@ const { user, isAuthenticated, showLogo = true, hideActions = false } = Astro.pr
                 Get Started
               </a>
             </div>
-          )}
-        </div>
-      )}
+          )
+        )}
+      </div>
     </div>
   </div>
 </nav>

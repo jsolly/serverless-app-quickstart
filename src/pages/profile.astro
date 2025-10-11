@@ -15,19 +15,19 @@ const user = await getUserById(authUser.id);
 
 <Layout title="Profile" description="Edit your profile">
   <div class="min-h-screen bg-gray-50">
-    <Navigation user={authUser} isAuthenticated={true} />
+    <Navigation user={authUser} />
     
     <div class="max-w-3xl mx-auto px-6 py-12">
       
       <div class="mb-6">
         <a
-          href="/"
+          href="/dashboard"
           class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium"
         >
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
-          Back to Home
+          Back to Dashboard
         </a>
       </div>
     
