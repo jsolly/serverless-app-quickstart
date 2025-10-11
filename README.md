@@ -9,6 +9,40 @@
 - [Husky](https://typicode.github.io/husky/)
 - [Terraform](https://www.terraform.io/) # I use tfenv to manage my terraform versions
 
+## Setup
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```env
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+DATABASE_URL=postgresql://postgres:password@host:5432/database
+```
+
+**Where to find these:**
+- `SUPABASE_URL` and `SUPABASE_ANON_KEY`: Supabase Dashboard → Project Settings → API
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase Dashboard → Project Settings → API (under "Service role")
+- `DATABASE_URL`: Supabase Dashboard → Project Settings → Database → Connection String (Direct connection)
+
+**Security Note:** The `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security. Never expose it on the client side. It's only used in server-side API endpoints.
+
+### Database Setup
+
+Run the database setup script to create the users table with triggers and RLS policies:
+
+```bash
+./scripts/setup-database.sh
+```
+
+This creates:
+- `users` table with email and bio fields
+- Row Level Security (RLS) policies
+- Automatic profile creation trigger on user signup
+- Automatic profile deletion trigger on user deletion
+
 ## 🚀 Project Structure
 
 Inside of your Astro project, you'll see the following folders and files:

@@ -12,7 +12,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
 		return new Response("Email and password are required", { status: 400 });
 	}
 
-	const { data, error } = await supabase.auth.signUp({
+	const { error } = await supabase.auth.signUp({
 		email,
 		password,
 	});
@@ -21,18 +21,6 @@ export const POST: APIRoute = async ({ request, redirect }) => {
 		return new Response(error.message, { status: 500 });
 	}
 
-	// Create user profile if signup was successful
-	if (data.user) {
-		const { error: profileError } = await supabase.from("users").insert({
-			id: data.user.id,
-			email: data.user.email!,
-		});
-
-		if (profileError) {
-			console.error("Failed to create user profile:", profileError);
-			// Continue anyway - the auth user was created successfully
-		}
-	}
-
-	return redirect("/signin");
+	// Redirect to confirmation page with the email address
+	return redirect(`/unconfirmed?email=${encodeURIComponent(email)}`);
 };

@@ -18,6 +18,14 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 	});
 
 	if (error) {
+		// Handle email confirmation error with a clean redirect
+		if (
+			error.message.includes("Email not confirmed") ||
+			error.message.includes("email_not_confirmed")
+		) {
+			return redirect(`/unconfirmed?email=${encodeURIComponent(email)}`);
+		}
+
 		return new Response(error.message, { status: 500 });
 	}
 

@@ -43,8 +43,12 @@ DB_URL="$DATABASE_URL"
 
 echo -e "${GREEN}Connecting to database...${NC}"
 
+# Drop existing table and recreate (for development)
+echo -e "${YELLOW}Dropping existing users table...${NC}"
+psql "$DB_URL" -c "DROP TABLE IF EXISTS users CASCADE;" || true
+
 # Execute the SQL
-if psql "$DB_URL" -f "supabase/users-table.sql"; then
+if psql "$DB_URL" -f "db/users-table.sql"; then
     echo -e "${GREEN}✅ Database setup completed successfully!${NC}"
     echo -e "${GREEN}Users table created with RLS policies and triggers.${NC}"
 else

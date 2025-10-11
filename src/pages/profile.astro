@@ -1,0 +1,208 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navigation from "../components/Navigation.astro";
+import { getCurrentUser } from "../lib/auth";
+import { getUserById } from "../lib/users";
+
+const authUser = await getCurrentUser(Astro.cookies);
+
+if (!authUser) {
+  return Astro.redirect("/");
+}
+
+const user = await getUserById(authUser.id);
+---
+
+<Layout title="Profile" description="Edit your profile">
+  <div class="min-h-screen bg-gray-50">
+    <Navigation user={authUser} isAuthenticated={true} />
+    
+    <div class="max-w-3xl mx-auto px-6 py-12">
+      
+      <div class="mb-6">
+        <a
+          href="/"
+          class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Home
+        </a>
+      </div>
+    
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Profile</h1>
+        <p class="text-gray-600 mb-8">Update your profile information</p>
+
+        <div id="error-message" class="hidden mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md"></div>
+        <div id="success-message" class="hidden mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md"></div>
+
+        <form id="profile-form" class="space-y-6">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={user.email}
+              disabled
+              class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+            />
+            <p class="mt-2 text-sm text-gray-500">Email cannot be changed. Contact support if you need to update your email address.</p>
+          </div>
+
+          <div>
+            <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">
+              Bio
+            </label>
+            <textarea
+              id="bio"
+              name="bio"
+              rows="4"
+              placeholder="Tell us about yourself..."
+              class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            >{user.bio || ""}</textarea>
+            <p class="mt-2 text-sm text-gray-500">A brief description for your profile.</p>
+          </div>
+
+          <div class="flex items-center justify-center pt-6">
+            <button
+              type="submit"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md font-medium transition-colors cursor-pointer"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm border border-red-200 p-8 mt-6">
+        <h2 class="text-xl font-bold text-red-600 mb-2">Danger Zone</h2>
+        <p class="text-gray-600 mb-6">Once you delete your account, there is no going back. Please be certain.</p>
+        
+        <button
+          id="delete-account-btn"
+          type="button"
+          class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer"
+        >
+          Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const form = document.getElementById('profile-form') as HTMLFormElement;
+  const errorDiv = document.getElementById('error-message');
+  const successDiv = document.getElementById('success-message');
+  const deleteBtn = document.getElementById('delete-account-btn');
+
+  // Track form changes for unsaved changes warning
+  let hasUnsavedChanges = false;
+  let originalFormData: FormData;
+
+  // Store original form data
+  function storeOriginalData() {
+    originalFormData = new FormData(form);
+  }
+
+  // Check if form has been modified
+  function checkForChanges() {
+    const currentFormData = new FormData(form);
+    hasUnsavedChanges = false;
+    
+    for (const [key, value] of originalFormData.entries()) {
+      if (currentFormData.get(key) !== value) {
+        hasUnsavedChanges = true;
+        break;
+      }
+    }
+  }
+
+  // Initialize form tracking
+  storeOriginalData();
+  form.addEventListener('input', checkForChanges);
+  form.addEventListener('change', checkForChanges);
+
+  // Warn before leaving with unsaved changes
+  window.addEventListener('beforeunload', (e) => {
+    if (hasUnsavedChanges) {
+      e.preventDefault();
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    errorDiv?.classList.add('hidden');
+    successDiv?.classList.add('hidden');
+
+    const formData = new FormData(form);
+    const bio = formData.get('bio') as string;
+
+    try {
+      const response = await fetch('/api/profile/update', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ bio }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update profile');
+      }
+
+      if (successDiv) {
+        successDiv.textContent = 'Profile updated successfully!';
+        successDiv.classList.remove('hidden');
+      }
+
+      // Reset unsaved changes flag and update original data
+      hasUnsavedChanges = false;
+      storeOriginalData();
+
+      setTimeout(() => {
+        successDiv?.classList.add('hidden');
+      }, 3000);
+    } catch (error) {
+      if (errorDiv) {
+        errorDiv.textContent = error instanceof Error ? error.message : 'Failed to update profile';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+  });
+
+  deleteBtn?.addEventListener('click', async () => {
+    const confirmed = confirm(
+      'Are you sure you want to delete your account? This action cannot be undone.'
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch('/api/auth/delete-account', {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete account');
+      }
+
+      window.location.href = '/';
+    } catch (error) {
+      if (errorDiv) {
+        errorDiv.textContent = error instanceof Error ? error.message : 'Failed to delete account';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+  });
+</script>
+

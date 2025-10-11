@@ -21,11 +21,18 @@ const { user, isAuthenticated, showLogo = true } = Astro.props;
       <div class="flex items-center space-x-6">
         {isAuthenticated ? (
           <div class="flex items-center space-x-4">
-            <span class="text-sm text-gray-700">Welcome, {user?.email}</span>
+            <a 
+              href="/profile"
+              class="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+            >
+              <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                {user?.email?.charAt(0).toUpperCase()}
+              </div>
+            </a>
             <form action="/api/auth/signout" method="post" class="inline">
               <button 
                 type="submit" 
-                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-md text-sm font-medium transition-colors"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2.5 rounded-md text-sm font-medium transition-colors cursor-pointer"
               >
                 Sign Out
               </button>
@@ -33,12 +40,6 @@ const { user, isAuthenticated, showLogo = true } = Astro.props;
           </div>
         ) : (
           <div class="flex items-center space-x-4">
-            <a 
-              href="/signin" 
-              class="text-gray-700 hover:text-gray-900 px-4 py-2.5 rounded-md text-sm font-medium"
-            >
-              Sign In
-            </a>
             <a 
               href="/register" 
               class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-md text-sm font-medium transition-colors"

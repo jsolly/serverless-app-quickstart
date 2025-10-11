@@ -18,34 +18,19 @@ const { isAuthenticated } = Astro.props;
           A modern template for building serverless applications with Astro, Supabase, and Tailwind CSS. 
           Get started in minutes with authentication, database, and beautiful UI components.
         </p>
-        <div class="mt-8 sm:mt-12 sm:flex sm:justify-center">
+        <div class="mt-8 sm:mt-12">
             {isAuthenticated ? (
-              <div class="rounded-md shadow">
+              <p class="text-lg text-gray-600">Welcome back!</p>
+            ) : (
+              <div class="flex justify-center">
                 <a 
-                  href="/" 
-                  class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
+                  href="/register" 
+                  class="shadow flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
                 >
-                  Welcome Back
+                  Get started
                 </a>
               </div>
-            ) : (
-            <div class="rounded-md shadow">
-              <a 
-                href="/register" 
-                class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
-              >
-                Get started
-              </a>
-            </div>
-          )}
-          <div class="mt-3 sm:mt-0 sm:ml-3">
-            <a 
-              href="https://github.com/your-username/serverless-app-quickstart" 
-              class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 md:py-4 md:text-lg md:px-10"
-            >
-              View on GitHub
-            </a>
-          </div>
+            )}
         </div>
       </div>
     </main>

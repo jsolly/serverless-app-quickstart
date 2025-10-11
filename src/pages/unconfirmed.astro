@@ -1,0 +1,155 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const email = Astro.url.searchParams.get("email");
+---
+
+<Layout title="Verify Your Email" description="Please verify your email address to continue">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div class="text-center">
+        <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-100">
+          <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Check Your Email
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+          We've sent a verification link to
+        </p>
+        <p class="mt-1 text-center text-sm font-medium text-gray-900">
+          {email || "your email address"}
+        </p>
+      </div>
+
+      <div class="mt-8 space-y-6">
+        <div class="rounded-md bg-blue-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-blue-800">
+                What's next?
+              </h3>
+              <div class="mt-2 text-sm text-blue-700">
+                <ul class="list-disc pl-5 space-y-1">
+                  <li>Check your email inbox (and spam folder)</li>
+                  <li>Click the verification link in the email</li>
+                  <li>Return here to sign in</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <button
+            id="resend-btn"
+            type="button"
+            class="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Resend verification email
+          </button>
+          
+          <div class="text-center">
+            <a
+              href="/"
+              class="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Back to home
+            </a>
+          </div>
+        </div>
+
+        <div id="resend-message" class="hidden p-4 rounded-md"></div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const resendBtn = document.getElementById('resend-btn') as HTMLButtonElement;
+  const messageDiv = document.getElementById('resend-message');
+  const email = new URLSearchParams(window.location.search).get('email');
+  let cooldownTimer: NodeJS.Timeout | null = null;
+
+  // Initialize button state
+  setButtonCooldown(30);
+
+  resendBtn?.addEventListener('click', async () => {
+    if (!email) {
+      showMessage('No email address found', 'error');
+      return;
+    }
+
+    if (resendBtn.disabled) {
+      return;
+    }
+
+    resendBtn.disabled = true;
+    resendBtn.textContent = 'Sending...';
+
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to resend verification email');
+      }
+
+      showMessage('Verification email sent! Check your inbox.', 'success');
+      setButtonCooldown(30);
+    } catch (error) {
+      showMessage(error instanceof Error ? error.message : 'Failed to send email', 'error');
+      setButtonCooldown(5); // Shorter cooldown on error
+    }
+  });
+
+  function setButtonCooldown(seconds: number) {
+    if (cooldownTimer) {
+      clearInterval(cooldownTimer);
+    }
+
+    resendBtn.disabled = true;
+    let remaining = seconds;
+
+    const updateButton = () => {
+      if (remaining > 0) {
+        resendBtn.textContent = `Resend verification email (${remaining}s)`;
+        remaining--;
+      } else {
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Resend verification email';
+        clearInterval(cooldownTimer!);
+        cooldownTimer = null;
+      }
+    };
+
+    updateButton(); // Initial update
+    cooldownTimer = setInterval(updateButton, 1000);
+  }
+
+  function showMessage(text: string, type: 'success' | 'error') {
+    if (!messageDiv) return;
+
+    messageDiv.textContent = text;
+    messageDiv.className = `p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
+    messageDiv.classList.remove('hidden');
+
+    setTimeout(() => {
+      messageDiv.classList.add('hidden');
+    }, 5000);
+  }
+</script>
