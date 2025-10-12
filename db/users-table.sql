@@ -19,15 +19,15 @@ ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 -- Create policies for RLS
 -- Users can read their own data
 CREATE POLICY "Users can view own profile" ON users
-  FOR SELECT USING (auth.uid() = id);
+  FOR SELECT USING ((SELECT auth.uid()) = id);
 
 -- Users can update their own data
 CREATE POLICY "Users can update own profile" ON users
-  FOR UPDATE USING (auth.uid() = id);
+  FOR UPDATE USING ((SELECT auth.uid()) = id);
 
 -- Users can delete their own data
 CREATE POLICY "Users can delete own profile" ON users
-  FOR DELETE USING (auth.uid() = id);
+  FOR DELETE USING ((SELECT auth.uid()) = id);
 
 -- Function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
