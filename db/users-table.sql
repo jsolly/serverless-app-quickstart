@@ -30,13 +30,16 @@ CREATE POLICY "Users can delete own profile" ON users
   FOR DELETE USING (auth.uid() = id);
 
 -- Function to automatically update updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public, pg_temp
+AS $$
 BEGIN
-  NEW.updated_at = NOW();
+  NEW.updated_at = pg_catalog.now();
   RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$;
 
 -- Trigger to automatically update updated_at
 CREATE TRIGGER update_users_updated_at
@@ -46,13 +49,17 @@ CREATE TRIGGER update_users_updated_at
 
 -- Function to automatically create user profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
 BEGIN
   INSERT INTO public.users (id, email)
   VALUES (NEW.id, NEW.email);
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Trigger to create profile when new user signs up
 CREATE OR REPLACE TRIGGER on_auth_user_created
@@ -62,12 +69,16 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
 
 -- Function to delete user profile when auth user is deleted
 CREATE OR REPLACE FUNCTION public.handle_user_delete()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
 BEGIN
   DELETE FROM public.users WHERE id = OLD.id;
   RETURN OLD;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Trigger to delete profile when auth user is deleted
 CREATE OR REPLACE TRIGGER on_auth_user_deleted

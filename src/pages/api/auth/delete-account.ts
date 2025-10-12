@@ -1,9 +1,14 @@
 import type { APIRoute } from "astro";
-import { getCurrentUser } from "../../../lib/auth";
-import { supabaseAdmin } from "../../../lib/supabase";
+import {
+	createSupabaseAdminClient,
+	createSupabaseServerClient,
+} from "../../../lib/supabase";
+import { createUserService } from "../../../lib/users";
 
 export const DELETE: APIRoute = async ({ cookies, redirect }) => {
-	const authUser = await getCurrentUser(cookies);
+	const supabase = createSupabaseServerClient(cookies);
+	const users = createUserService(supabase, cookies);
+	const authUser = await users.getCurrentUser();
 
 	if (!authUser) {
 		return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -12,20 +17,8 @@ export const DELETE: APIRoute = async ({ cookies, redirect }) => {
 		});
 	}
 
-	if (!supabaseAdmin) {
-		return new Response(
-			JSON.stringify({
-				error:
-					"Service role key not configured. Add SUPABASE_SERVICE_ROLE_KEY to .env.local",
-			}),
-			{
-				status: 500,
-				headers: { "Content-Type": "application/json" },
-			},
-		);
-	}
-
 	try {
+		const supabaseAdmin = createSupabaseAdminClient();
 		const { error } = await supabaseAdmin.auth.admin.deleteUser(authUser.id);
 
 		if (error) {

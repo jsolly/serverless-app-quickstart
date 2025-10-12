@@ -1,9 +1,9 @@
-// With `output: 'static'` configured:
-// export const prerender = false;
 import type { APIRoute } from "astro";
-import { supabase } from "../../../lib/supabase";
+import { createSupabaseServerClient } from "../../../lib/supabase";
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+	const supabase = createSupabaseServerClient(cookies);
+
 	const formData = await request.formData();
 	const email = formData.get("email")?.toString();
 	const password = formData.get("password")?.toString();
@@ -18,7 +18,6 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 	});
 
 	if (error) {
-		// Handle email confirmation error with a clean redirect
 		if (
 			error.message.includes("Email not confirmed") ||
 			error.message.includes("email_not_confirmed")

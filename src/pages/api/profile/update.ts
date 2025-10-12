@@ -1,9 +1,11 @@
 import type { APIRoute } from "astro";
-import { getCurrentUser } from "../../../lib/auth";
-import { getUserById, updateUser } from "../../../lib/users";
+import { createSupabaseServerClient } from "../../../lib/supabase";
+import { createUserService } from "../../../lib/users";
 
 export const PATCH: APIRoute = async ({ request, cookies }) => {
-	const authUser = await getCurrentUser(cookies);
+	const supabase = createSupabaseServerClient(cookies);
+	const users = createUserService(supabase, cookies);
+	const authUser = await users.getCurrentUser();
 
 	if (!authUser) {
 		return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -16,7 +18,7 @@ export const PATCH: APIRoute = async ({ request, cookies }) => {
 		const body = await request.json();
 		const { bio } = body;
 
-		const currentUser = await getUserById(authUser.id);
+		const currentUser = await users.getById(authUser.id);
 
 		if (bio === undefined || bio === currentUser.bio) {
 			return new Response(JSON.stringify({ message: "No changes to update" }), {
@@ -25,7 +27,9 @@ export const PATCH: APIRoute = async ({ request, cookies }) => {
 			});
 		}
 
-		const updatedUser = await updateUser(authUser.id, { bio: bio || null });
+		const updatedUser = await users.update(authUser.id, {
+			bio: bio || null,
+		});
 
 		return new Response(JSON.stringify({ user: updatedUser }), {
 			status: 200,

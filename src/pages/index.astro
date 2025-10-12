@@ -4,9 +4,12 @@ import Navigation from "../components/Navigation.astro";
 import Hero from "../components/Hero.astro";
 import Features from "../components/Features.astro";
 import CTA from "../components/CTA.astro";
-import { getCurrentUser } from "../lib/auth";
+import { createSupabaseServerClient } from "../lib/supabase";
+import { createUserService } from "../lib/users";
 
-const user = await getCurrentUser(Astro.cookies);
+const supabase = createSupabaseServerClient(Astro.cookies);
+const users = createUserService(supabase, Astro.cookies);
+const user = await users.getCurrentUser();
 const isAuthenticated = !!user;
 ---
 

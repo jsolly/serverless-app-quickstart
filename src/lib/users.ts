@@ -1,58 +1,88 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { AstroCookies } from "astro";
 import type { Database } from "../types/database";
-import { supabase } from "./supabase";
 
-export async function createUser(
-	userData: Database["public"]["Tables"]["users"]["Insert"],
+export function createUserService(
+	supabase: SupabaseClient,
+	cookies: AstroCookies,
 ) {
-	const { data, error } = await supabase
-		.from("users")
-		.insert(userData)
-		.select()
-		.single();
+	return {
+		async getCurrentUser() {
+			const accessToken = cookies.get("sb-access-token");
+			const refreshToken = cookies.get("sb-refresh-token");
 
-	if (error) throw error;
-	return data;
-}
+			if (!accessToken || !refreshToken) {
+				return null;
+			}
 
-export async function getUserById(id: string) {
-	const { data, error } = await supabase
-		.from("users")
-		.select("*")
-		.eq("id", id)
-		.single();
+			try {
+				const { data, error } = await supabase.auth.setSession({
+					refresh_token: refreshToken.value,
+					access_token: accessToken.value,
+				});
 
-	if (error) throw error;
-	return data;
-}
+				if (error || !data.user) {
+					return null;
+				}
 
-export async function getUserByEmail(email: string) {
-	const { data, error } = await supabase
-		.from("users")
-		.select("*")
-		.eq("email", email)
-		.single();
+				return data.user;
+			} catch {
+				return null;
+			}
+		},
 
-	if (error) throw error;
-	return data;
-}
+		async create(userData: Database["public"]["Tables"]["users"]["Insert"]) {
+			const { data, error } = await supabase
+				.from("users")
+				.insert(userData)
+				.select()
+				.single();
 
-export async function updateUser(
-	id: string,
-	updates: Database["public"]["Tables"]["users"]["Update"],
-) {
-	const { data, error } = await supabase
-		.from("users")
-		.update(updates)
-		.eq("id", id)
-		.select()
-		.single();
+			if (error) throw error;
+			return data;
+		},
 
-	if (error) throw error;
-	return data;
-}
+		async getById(id: string) {
+			const { data, error } = await supabase
+				.from("users")
+				.select("*")
+				.eq("id", id)
+				.single();
 
-export async function deleteUser(id: string) {
-	const { error } = await supabase.from("users").delete().eq("id", id);
+			if (error) throw error;
+			return data;
+		},
 
-	if (error) throw error;
+		async getByEmail(email: string) {
+			const { data, error } = await supabase
+				.from("users")
+				.select("*")
+				.eq("email", email)
+				.single();
+
+			if (error) throw error;
+			return data;
+		},
+
+		async update(
+			id: string,
+			updates: Database["public"]["Tables"]["users"]["Update"],
+		) {
+			const { data, error } = await supabase
+				.from("users")
+				.update(updates)
+				.eq("id", id)
+				.select()
+				.single();
+
+			if (error) throw error;
+			return data;
+		},
+
+		async delete(id: string) {
+			const { error } = await supabase.from("users").delete().eq("id", id);
+
+			if (error) throw error;
+		},
+	};
 }

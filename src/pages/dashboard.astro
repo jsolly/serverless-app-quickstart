@@ -1,16 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Navigation from "../components/Navigation.astro";
-import { getCurrentUser } from "../lib/auth";
-import { getUserById } from "../lib/users";
+import { createSupabaseServerClient } from "../lib/supabase";
+import { createUserService } from "../lib/users";
 
-const authUser = await getCurrentUser(Astro.cookies);
+const supabase = createSupabaseServerClient(Astro.cookies);
+const users = createUserService(supabase, Astro.cookies);
+
+const authUser = await users.getCurrentUser();
 
 if (!authUser) {
   return Astro.redirect("/");
 }
 
-const user = await getUserById(authUser.id);
+const user = await users.getById(authUser.id);
 ---
 
 <Layout title="Dashboard" description="Your dashboard">

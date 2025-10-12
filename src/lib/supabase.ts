@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import type { AstroCookies } from "astro";
 
 const supabaseUrl = import.meta.env.SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
@@ -8,13 +9,30 @@ if (!supabaseUrl || !supabaseAnonKey) {
 	throw new Error("Missing Supabase environment variables");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-export const supabaseAdmin = supabaseServiceRoleKey
-	? createClient(supabaseUrl, supabaseServiceRoleKey, {
-			auth: {
-				autoRefreshToken: false,
-				persistSession: false,
+export function createSupabaseServerClient(_cookies: AstroCookies) {
+	return createClient(supabaseUrl, supabaseAnonKey, {
+		auth: {
+			autoRefreshToken: false,
+			persistSession: false,
+		},
+		global: {
+			headers: {
+				"Cache-Control": "no-cache, no-store, must-revalidate",
 			},
-		})
-	: null;
+		},
+	});
+}
+
+export function createSupabaseAdminClient() {
+	if (!supabaseServiceRoleKey) {
+		throw new Error(
+			"Service role key not configured. Add SUPABASE_SERVICE_ROLE_KEY to environment variables",
+		);
+	}
+	return createClient(supabaseUrl, supabaseServiceRoleKey, {
+		auth: {
+			autoRefreshToken: false,
+			persistSession: false,
+		},
+	});
+}
