@@ -11,8 +11,8 @@
 		"test:unit": "vitest --no-watch -t 'unit'",
 		"check:ts": "tsc --noEmit",
 		"check:iac": "terraform validate",
-		"check:fix": "biome check --write --no-errors-on-unmatched",
-		"fix": "npm run check:fix && npm run check:ts",
+		"check:biome": "biome check --write --no-errors-on-unmatched",
+		"fix": "npm run check:biome && npm run check:ts",
 		"outdated": "npm outdated",
 		"update": "npx npm-check-updates -u && npm install"
 	},

@@ -4,7 +4,7 @@
 # This script creates the users table and sets up RLS policies
 #
 # Usage:
-#   ./scripts/setup-database.sh
+#   ./db/setup-database.sh
 #
 # Prerequisites:
 #   - .env.local file with DATABASE_URL
@@ -59,3 +59,4 @@ fi
 # No cleanup needed since we're using the existing SQL file
 
 echo -e "${GREEN}🎉 Setup complete! You can now test registration.${NC}"
+

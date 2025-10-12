@@ -1,6 +1,25 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AstroCookies } from "astro";
-import type { Database } from "../types/database";
+
+interface User {
+	id: string;
+	email: string;
+	bio: string | null;
+	created_at: string;
+	updated_at: string;
+}
+
+interface Database {
+	public: {
+		Tables: {
+			users: {
+				Row: User;
+				Insert: Omit<User, "id" | "created_at" | "updated_at">;
+				Update: Partial<Omit<User, "id" | "created_at" | "updated_at">>;
+			};
+		};
+	};
+}
 
 export function createUserService(
 	supabase: SupabaseClient,
