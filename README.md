@@ -20,16 +20,18 @@ A serverless web application template built with Astro, deployed on Vercel, with
 Create a `.env.local` file in the root directory with the following variables:
 
 ```env
-SUPABASE_URL=your_supabase_project_url
+SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-DATABASE_URL=postgresql://postgres:password@host:5432/database
+DATABASE_URL=postgresql://postgres.your-project:your-password@aws-0-us-east-1.pooler.supabase.com:6543/postgres
 ```
 
 **Where to find these:**
 - `SUPABASE_URL` and `SUPABASE_ANON_KEY`: Supabase Dashboard → Project Settings → API
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase Dashboard → Project Settings → API (under "Service role")
-- `DATABASE_URL`: Supabase Dashboard → Project Settings → Database → Connection String (Direct connection)
+- `DATABASE_URL`: Supabase Dashboard → Project Settings → Database → Connection String → Transaction mode (pooler)
+
+**Note:** `DATABASE_URL` is only needed for running the database setup script. The application itself uses `SUPABASE_URL` and the auth keys.
 
 **Security Note:** The `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security. Never expose it on the client side. It's only used in server-side API endpoints.
 
@@ -87,7 +89,7 @@ This creates:
 ```
 
 **Key Features:**
-- 🔐 Authentication with Supabase (email/password)
+- 🔐 Authentication and PostgreSQL database with Supabase
 - 👤 User profile management
 - 🎨 Modern UI with Tailwind CSS
 - 🚀 Serverless deployment on Vercel
