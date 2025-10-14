@@ -106,13 +106,15 @@ const email = Astro.url.searchParams.get("email");
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to resend verification email');
+        console.error('Resend verification failed:', data.error);
+        throw new Error('Failed to resend verification email');
       }
 
       showMessage('Verification email sent! Check your inbox.', 'success');
       setButtonCooldown(30);
     } catch (error) {
-      showMessage(error instanceof Error ? error.message : 'Failed to send email', 'error');
+      console.error('Resend verification error:', error);
+      showMessage('Failed to send email. Please try again.', 'error');
       setButtonCooldown(5); // Shorter cooldown on error
     }
   });

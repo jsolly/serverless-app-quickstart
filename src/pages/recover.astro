@@ -1,0 +1,122 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navigation from "../components/Navigation.astro";
+---
+
+<Layout title="Reset Password">
+  <div class="min-h-screen bg-gray-50">
+    <Navigation />
+
+    <div class="max-w-3xl mx-auto px-6 py-12">
+      <div class="mb-6">
+        <a
+          href="/"
+          class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Sign in
+        </a>
+      </div>
+
+      <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg border border-gray-200 p-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Set a new password</h1>
+        <p class="text-sm text-gray-600 mb-6">Choose a strong password for your account.</p>
+
+        <form id="reset-form" class="space-y-4">
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">New password</label>
+            <input 
+              type="password" 
+              name="password" 
+              id="password" 
+              required 
+              autocomplete="new-password"
+              class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+              placeholder="••••••••"
+              minlength="6"
+            />
+          </div>
+          <div>
+            <label for="confirm" class="block text-sm font-medium text-gray-700 mb-2">Confirm password</label>
+            <input 
+              type="password" 
+              name="confirm" 
+              id="confirm" 
+              required 
+              autocomplete="new-password"
+              class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+              placeholder="••••••••"
+              minlength="6"
+            />
+          </div>
+          <button 
+            type="submit" 
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition-colors cursor-pointer"
+          >
+            Update password
+          </button>
+        </form>
+
+        <div id="message" class="hidden mt-4 p-4 rounded-md"></div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabaseUrl = import.meta.env.SUPABASE_URL as string;
+  const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY as string;
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+  const form = document.getElementById('reset-form') as HTMLFormElement;
+  const messageDiv = document.getElementById('message');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const confirmInput = document.getElementById('confirm') as HTMLInputElement;
+
+    if (passwordInput.value !== confirmInput.value) {
+      showMessage('Passwords do not match', 'error');
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Updating...';
+
+    const { error } = await supabase.auth.updateUser({ password: passwordInput.value });
+    
+    submitButton.disabled = false;
+    submitButton.textContent = 'Update password';
+
+    if (error) {
+      console.error('Password update failed:', error);
+      
+      // Map known safe error codes to user-friendly messages
+      let userMessage = 'Failed to update password. Please try again.';
+      if (error.message?.includes('weak password') || error.message?.includes('password')) {
+        userMessage = 'Password does not meet security requirements. Please choose a stronger password.';
+      }
+      
+      showMessage(userMessage, 'error');
+      return;
+    }
+
+    showMessage('Password updated! You can now sign in with your new password.', 'success');
+    form.reset();
+  });
+
+  function showMessage(text: string, type: 'success' | 'error') {
+    if (!messageDiv) return;
+    messageDiv.textContent = text;
+    messageDiv.className = `mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
+    messageDiv.classList.remove('hidden');
+  }
+</script>
+
+

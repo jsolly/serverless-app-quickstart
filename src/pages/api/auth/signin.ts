@@ -25,7 +25,10 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 			return redirect(`/unconfirmed?email=${encodeURIComponent(email)}`);
 		}
 
-		return new Response(error.message, { status: 500 });
+		// Redirect back to the home page with a generic invalid credentials error
+		return redirect(
+			`/?error=invalid_credentials${email ? `&email=${encodeURIComponent(email)}` : ""}`,
+		);
 	}
 
 	const { access_token, refresh_token } = data.session;

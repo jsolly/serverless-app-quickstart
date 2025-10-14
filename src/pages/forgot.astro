@@ -1,0 +1,81 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navigation from "../components/Navigation.astro";
+---
+
+<Layout title="Forgot Password">
+  <div class="min-h-screen bg-gray-50">
+    <Navigation />
+
+    <div class="max-w-3xl mx-auto px-6 py-12">
+      <div class="mb-6">
+        <a
+          href="/"
+          class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-medium"
+        >
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Back to Sign in
+        </a>
+      </div>
+
+      <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg border border-gray-200 p-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Forgot your password?</h1>
+        <p class="text-sm text-gray-600 mb-6">Enter your email and we'll send you a link to reset your password.</p>
+
+        <form id="forgot-form" class="space-y-4" action="/api/auth/forgot-password" method="post">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <input 
+              type="email" 
+              name="email" 
+              id="email" 
+              required 
+              autocomplete="email"
+              class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+              placeholder="you@example.com"
+            />
+          </div>
+          <button 
+            type="submit" 
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition-colors cursor-pointer"
+          >
+            Send reset link
+          </button>
+        </form>
+
+        <div id="message" class="hidden mt-4 p-4 rounded-md"></div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const form = document.getElementById('forgot-form') as HTMLFormElement;
+  const messageDiv = document.getElementById('message');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const response = await fetch(form.action, { method: 'POST', body: formData });
+
+    if (response.status === 204) {
+      showMessage('If an account exists for that email, a reset link has been sent.', 'success');
+      form.reset();
+      return;
+    }
+
+    const text = await response.text();
+    showMessage(text || 'Failed to request password reset', 'error');
+  });
+
+  function showMessage(text: string, type: 'success' | 'error') {
+    if (!messageDiv) return;
+    messageDiv.textContent = text;
+    messageDiv.className = `mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
+    messageDiv.classList.remove('hidden');
+  }
+</script>
+
+

@@ -30,15 +30,10 @@ export const DELETE: APIRoute = async ({ cookies, redirect }) => {
 
 		return redirect("/");
 	} catch (error) {
-		return new Response(
-			JSON.stringify({
-				error:
-					error instanceof Error ? error.message : "Failed to delete account",
-			}),
-			{
-				status: 500,
-				headers: { "Content-Type": "application/json" },
-			},
-		);
+		console.error("Account deletion failed:", error);
+		return new Response(JSON.stringify({ error: "Failed to delete account" }), {
+			status: 500,
+			headers: { "Content-Type": "application/json" },
+		});
 	}
 };

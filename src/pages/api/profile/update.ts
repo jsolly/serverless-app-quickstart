@@ -36,15 +36,10 @@ export const PATCH: APIRoute = async ({ request, cookies }) => {
 			headers: { "Content-Type": "application/json" },
 		});
 	} catch (error) {
-		return new Response(
-			JSON.stringify({
-				error:
-					error instanceof Error ? error.message : "Failed to update profile",
-			}),
-			{
-				status: 500,
-				headers: { "Content-Type": "application/json" },
-			},
-		);
+		console.error("Profile update failed:", error);
+		return new Response(JSON.stringify({ error: "Failed to update profile" }), {
+			status: 500,
+			headers: { "Content-Type": "application/json" },
+		});
 	}
 };
