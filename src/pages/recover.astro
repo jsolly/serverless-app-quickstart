@@ -77,6 +77,7 @@ import Navigation from "../components/Navigation.astro";
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
     const passwordInput = document.getElementById('password') as HTMLInputElement;
     const confirmInput = document.getElementById('confirm') as HTMLInputElement;
 
@@ -85,9 +86,24 @@ import Navigation from "../components/Navigation.astro";
       return;
     }
 
+    submitButton.disabled = true;
+    submitButton.textContent = 'Updating...';
+
     const { error } = await supabase.auth.updateUser({ password: passwordInput.value });
+    
+    submitButton.disabled = false;
+    submitButton.textContent = 'Update password';
+
     if (error) {
-      showMessage(error.message || 'Failed to update password', 'error');
+      console.error('Password update failed:', error);
+      
+      // Map known safe error codes to user-friendly messages
+      let userMessage = 'Failed to update password. Please try again.';
+      if (error.message?.includes('weak password') || error.message?.includes('password')) {
+        userMessage = 'Password does not meet security requirements. Please choose a stronger password.';
+      }
+      
+      showMessage(userMessage, 'error');
       return;
     }
 

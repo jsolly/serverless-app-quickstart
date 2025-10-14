@@ -18,7 +18,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 	});
 
 	if (error) {
-		return new Response(error.message, { status: 500 });
+		console.error("User registration failed:", error);
+		return new Response("Failed to register account", { status: 500 });
 	}
 
 	return redirect(`/unconfirmed?email=${encodeURIComponent(email)}`);

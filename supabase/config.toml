@@ -124,6 +124,8 @@ site_url = "env(SITE_URL)"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 additional_redirect_urls = [
   "env(SITE_URL)/auth/callback",
+  "env(SITE_URL)/profile",
+  "env(SITE_URL)/recover",
   "http://localhost:4321/auth/callback",
   "http://localhost:4321",
   "http://localhost:4321/dashboard",
