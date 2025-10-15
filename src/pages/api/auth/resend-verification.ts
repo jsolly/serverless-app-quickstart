@@ -36,7 +36,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		console.error("Resend verification email failed:", error);
 		return createErrorResponse(error, {
 			fallbackMessage: "Failed to send verification email",
-			json: true,
 		});
 	}
 };

@@ -3,14 +3,10 @@ export function createErrorResponse(
 	options: {
 		fallbackMessage?: string;
 		fallbackStatus?: number;
-		json?: boolean;
 	} = {},
 ): Response {
-	const {
-		fallbackMessage = "An error occurred",
-		fallbackStatus = 500,
-		json = false,
-	} = options;
+	const { fallbackMessage = "An error occurred", fallbackStatus = 500 } =
+		options;
 
 	const status =
 		error && typeof error === "object" && "status" in error
@@ -26,12 +22,8 @@ export function createErrorResponse(
 				: fallbackMessage
 			: fallbackMessage;
 
-	if (json) {
-		return new Response(JSON.stringify({ error: message }), {
-			status,
-			headers: { "Content-Type": "application/json" },
-		});
-	}
-
-	return new Response(message, { status });
+	return new Response(JSON.stringify({ error: message }), {
+		status,
+		headers: { "Content-Type": "application/json" },
+	});
 }

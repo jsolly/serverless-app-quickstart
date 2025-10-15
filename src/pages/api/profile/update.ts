@@ -40,7 +40,6 @@ export const PATCH: APIRoute = async ({ request, cookies }) => {
 		console.error("Profile update failed:", error);
 		return createErrorResponse(error, {
 			fallbackMessage: "Failed to update profile",
-			json: true,
 		});
 	}
 };

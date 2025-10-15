@@ -34,7 +34,6 @@ export const DELETE: APIRoute = async ({ cookies, redirect }) => {
 		console.error("Account deletion failed:", error);
 		return createErrorResponse(error, {
 			fallbackMessage: "Failed to delete account",
-			json: true,
 		});
 	}
 };
