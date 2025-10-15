@@ -31,6 +31,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 		return new Response(null, { status: 204 });
 	} catch (error) {
+		console.error("Password reset request failed:", error);
 		return createErrorResponse(error, {
 			fallbackMessage: "Failed to request password reset",
 		});

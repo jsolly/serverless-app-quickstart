@@ -14,12 +14,16 @@ export function createErrorResponse(
 
 	const status =
 		error && typeof error === "object" && "status" in error
-			? (error.status as number)
+			? typeof error.status === "number"
+				? error.status
+				: fallbackStatus
 			: fallbackStatus;
 
 	const message =
 		error && typeof error === "object" && "message" in error
-			? (error.message as string)
+			? typeof error.message === "string"
+				? error.message
+				: fallbackMessage
 			: fallbackMessage;
 
 	if (json) {
