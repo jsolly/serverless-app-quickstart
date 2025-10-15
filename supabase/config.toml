@@ -124,13 +124,16 @@ site_url = "env(SITE_URL)"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 additional_redirect_urls = [
   "env(SITE_URL)/auth/callback",
-  "env(SITE_URL)/profile",
+  "env(SITE_URL)/profile", 
   "env(SITE_URL)/recover",
   "http://localhost:4321/auth/callback",
   "http://localhost:4321",
   "http://localhost:4321/dashboard",
   "http://localhost:4321/profile",
-  "http://localhost:4321/recover"
+  "http://localhost:4321/recover",
+  "https://serverless-app-quickstart.vercel.app/recover",
+  "https://serverless-app-quickstart.vercel.app/auth/callback",
+  "https://serverless-app-quickstart.vercel.app/profile"
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600

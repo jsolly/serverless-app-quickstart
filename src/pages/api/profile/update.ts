@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { createErrorResponse } from "../../../lib/api-errors";
 import { createSupabaseServerClient } from "../../../lib/supabase";
 import { createUserService } from "../../../lib/users";
 
@@ -37,9 +38,9 @@ export const PATCH: APIRoute = async ({ request, cookies }) => {
 		});
 	} catch (error) {
 		console.error("Profile update failed:", error);
-		return new Response(JSON.stringify({ error: "Failed to update profile" }), {
-			status: 500,
-			headers: { "Content-Type": "application/json" },
+		return createErrorResponse(error, {
+			fallbackMessage: "Failed to update profile",
+			json: true,
 		});
 	}
 };

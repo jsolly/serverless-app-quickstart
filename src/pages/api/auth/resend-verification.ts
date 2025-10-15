@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { createErrorResponse } from "../../../lib/api-errors";
 import { createSupabaseServerClient } from "../../../lib/supabase";
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -33,12 +34,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		);
 	} catch (error) {
 		console.error("Resend verification email failed:", error);
-		return new Response(
-			JSON.stringify({ error: "Failed to send verification email" }),
-			{
-				status: 500,
-				headers: { "Content-Type": "application/json" },
-			},
-		);
+		return createErrorResponse(error, {
+			fallbackMessage: "Failed to send verification email",
+			json: true,
+		});
 	}
 };

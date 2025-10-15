@@ -1,7 +1,7 @@
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,10 +11,7 @@ export default defineConfig({
         edgeMiddleware: false,
     }),
 
-	site:
-		process.env.NODE_ENV === "development"
-			? "http://localhost:4321"
-			: "https://www.example.com",
+	site: process.env.SITE_URL,
 
 	integrations: [sitemap({})],
 

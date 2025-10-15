@@ -1,6 +1,6 @@
 ---
-import Layout from "../layouts/Layout.astro";
 import Navigation from "../components/Navigation.astro";
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Reset Password">
@@ -65,11 +65,9 @@ import Navigation from "../components/Navigation.astro";
   </div>
 </Layout>
 
-<script>
+<script lang="ts" define:vars={{ supabaseUrl: import.meta.env.SUPABASE_URL, supabaseAnonKey: import.meta.env.SUPABASE_ANON_KEY }}>
   import { createClient } from '@supabase/supabase-js';
 
-  const supabaseUrl = import.meta.env.SUPABASE_URL as string;
-  const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY as string;
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   const form = document.getElementById('reset-form') as HTMLFormElement;

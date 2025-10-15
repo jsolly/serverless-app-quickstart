@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { createErrorResponse } from "../../../lib/api-errors";
 import { createSupabaseServerClient } from "../../../lib/supabase";
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -12,8 +13,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			return new Response("Email is required", { status: 400 });
 		}
 
-		const siteUrl = import.meta.env.SITE_URL ?? "http://localhost:4321";
-		const redirectTo = `${siteUrl}/recover`;
+		// Ensure no double slashes in redirect URL
+		const baseUrl =
+			import.meta.env.SITE_URL?.replace(/\/$/, "") || "http://localhost:4321";
+		const redirectTo = `${baseUrl}/recover`;
 
 		const { error } = await supabase.auth.resetPasswordForEmail(email, {
 			redirectTo,
@@ -21,11 +24,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 		if (error) {
 			console.error("Password reset request failed:", error);
-			return new Response("Failed to request password reset", { status: 500 });
+			return createErrorResponse(error, {
+				fallbackMessage: "Failed to request password reset",
+			});
 		}
 
 		return new Response(null, { status: 204 });
-	} catch {
-		return new Response("Failed to request password reset", { status: 500 });
+	} catch (error) {
+		return createErrorResponse(error, {
+			fallbackMessage: "Failed to request password reset",
+		});
 	}
 };

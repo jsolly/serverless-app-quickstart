@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { createErrorResponse } from "../../../lib/api-errors";
 import {
 	createSupabaseAdminClient,
 	createSupabaseServerClient,
@@ -31,9 +32,9 @@ export const DELETE: APIRoute = async ({ cookies, redirect }) => {
 		return redirect("/");
 	} catch (error) {
 		console.error("Account deletion failed:", error);
-		return new Response(JSON.stringify({ error: "Failed to delete account" }), {
-			status: 500,
-			headers: { "Content-Type": "application/json" },
+		return createErrorResponse(error, {
+			fallbackMessage: "Failed to delete account",
+			json: true,
 		});
 	}
 };

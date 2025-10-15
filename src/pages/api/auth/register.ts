@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { createErrorResponse } from "../../../lib/api-errors";
 import { createSupabaseServerClient } from "../../../lib/supabase";
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
@@ -19,7 +20,9 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 
 	if (error) {
 		console.error("User registration failed:", error);
-		return new Response("Failed to register account", { status: 500 });
+		return createErrorResponse(error, {
+			fallbackMessage: "Failed to register account",
+		});
 	}
 
 	return redirect(`/unconfirmed?email=${encodeURIComponent(email)}`);
