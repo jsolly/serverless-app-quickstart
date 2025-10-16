@@ -25,14 +25,6 @@ import Layout from "../layouts/Layout.astro";
         <p class="text-sm text-gray-600 mb-6">Choose a strong password for your account.</p>
 
         <form id="reset-form" class="space-y-4">
-          <!-- Hidden email field for accessibility and password managers -->
-          <input 
-            type="email" 
-            name="email" 
-            id="email" 
-            autocomplete="username"
-            style="display: none;"
-          />
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">New password</label>
             <input 
@@ -81,6 +73,9 @@ import Layout from "../layouts/Layout.astro";
     import.meta.env.PUBLIC_SUPABASE_ANON_KEY
   );
 
+  const MESSAGE_UPDATE_DELAY = 500;
+  const AUTO_REDIRECT_DELAY = 3000;
+
   // Get DOM elements first
   const form = document.getElementById('reset-form') as HTMLFormElement;
   const messageDiv = document.getElementById('message') as HTMLDivElement;
@@ -114,15 +109,6 @@ import Layout from "../layouts/Layout.astro";
         // Hide the form since the token is invalid
         if (form) {
           form.style.display = 'none';
-        }
-      } else {
-        // Get user info to populate hidden email field
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user?.email) {
-          const emailInput = document.getElementById('email') as HTMLInputElement;
-          if (emailInput) {
-            emailInput.value = user.email;
-          }
         }
       }
     }
@@ -180,12 +166,12 @@ import Layout from "../layouts/Layout.astro";
           </div>
         `;
       }
-    }, 500);
+    }, MESSAGE_UPDATE_DELAY);
     
     // Auto-redirect to sign-in page after 3 seconds
     setTimeout(() => {
       window.location.href = '/';
-    }, 3000);
+    }, AUTO_REDIRECT_DELAY);
   });
 
   function showMessage(text: string, type: 'success' | 'error', showForgotLink = false) {
