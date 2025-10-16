@@ -24,14 +24,14 @@ PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 DATABASE_URL=postgresql://postgres.your-project:your-password@aws-0-us-east-1.pooler.supabase.com:6543/postgres
-SITE_URL=https://localhost:4321
+SITE_URL=http://localhost:4321
 ```
 
 **Where to find these:**
 - `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY`: Supabase Dashboard → Project Settings → API (the PUBLIC_ prefix makes them available in the browser)
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase Dashboard → Project Settings → API (under "Service role")
 - `DATABASE_URL`: Supabase Dashboard → Project Settings → Database → Connection String → Transaction mode (pooler)
-- `SITE_URL`: Set this to localhost:4321 for local development. Set this to the URL of your deployed application for production.
+- `SITE_URL`: Must be a full URL including the protocol scheme. Use `http://localhost:4321` for local development or `https://yourdomain.com` for production.
 **Note:** `DATABASE_URL` is only needed for running the database setup script. The application itself uses the Supabase URL and auth keys.
 
 **Security Note:** The `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security. Never expose it on the client side. It's only used in server-side API endpoints.

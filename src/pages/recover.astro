@@ -94,7 +94,7 @@ import Layout from "../layouts/Layout.astro";
   } else {
     // Handle normal token verification from query parameters
     const search = new URLSearchParams(window.location.search);
-    const token = search.get('token');
+    const token = search.get('token_hash');
     const type = search.get('type');
 
     if (token && type === 'recovery') {
@@ -152,20 +152,31 @@ import Layout from "../layouts/Layout.astro";
     
     // Add manual redirect button
     setTimeout(() => {
-      if (messageDiv) {
-        messageDiv.innerHTML = `
-          <div class="bg-green-50 text-green-700 p-4 rounded-md">
-            <div class="flex items-center justify-between">
-              <div>
-                <strong>Password updated!</strong> You can now sign in with your new password.
-              </div>
-              <a href="/" class="ml-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                Sign In Now
-              </a>
-            </div>
-          </div>
-        `;
-      }
+      if (!messageDiv) return;
+      
+      messageDiv.innerHTML = '';
+      
+      const container = document.createElement('div');
+      container.className = 'bg-green-50 text-green-700 p-4 rounded-md';
+      
+      const flexContainer = document.createElement('div');
+      flexContainer.className = 'flex items-center justify-between';
+      
+      const textContainer = document.createElement('div');
+      const strong = document.createElement('strong');
+      strong.textContent = 'Password updated!';
+      textContainer.appendChild(strong);
+      textContainer.appendChild(document.createTextNode(' You can now sign in with your new password.'));
+      
+      const link = document.createElement('a');
+      link.href = '/';
+      link.className = 'ml-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors';
+      link.textContent = 'Sign In Now';
+      
+      flexContainer.appendChild(textContainer);
+      flexContainer.appendChild(link);
+      container.appendChild(flexContainer);
+      messageDiv.appendChild(container);
     }, MESSAGE_UPDATE_DELAY);
     
     // Auto-redirect to sign-in page after 3 seconds
@@ -177,15 +188,24 @@ import Layout from "../layouts/Layout.astro";
   function showMessage(text: string, type: 'success' | 'error', showForgotLink = false) {
     if (!messageDiv) return;
     
+    messageDiv.innerHTML = '';
+    
     if (showForgotLink) {
-      messageDiv.innerHTML = `
-        <div class="bg-red-50 text-red-700 p-4 rounded-md">
-          <div class="mb-2">${text}</div>
-          <a href="/forgot" class="inline-flex items-center text-sm font-medium text-red-700 hover:text-red-800 underline">
-            Request a new password reset
-          </a>
-        </div>
-      `;
+      const container = document.createElement('div');
+      container.className = 'bg-red-50 text-red-700 p-4 rounded-md';
+      
+      const textDiv = document.createElement('div');
+      textDiv.className = 'mb-2';
+      textDiv.textContent = text;
+      
+      const link = document.createElement('a');
+      link.href = '/forgot';
+      link.className = 'inline-flex items-center text-sm font-medium text-red-700 hover:text-red-800 underline';
+      link.textContent = 'Request a new password reset';
+      
+      container.appendChild(textDiv);
+      container.appendChild(link);
+      messageDiv.appendChild(container);
     } else {
       messageDiv.textContent = text;
       messageDiv.className = `mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
