@@ -79,8 +79,8 @@ import Layout from "../layouts/Layout.astro";
       return;
     }
 
-    const text = await response.text();
-    showMessage(text || 'Failed to request password reset', 'error');
+    const data = await response.json();
+    showMessage(data.error || 'Failed to request password reset', 'error');
   });
 
   function setLoading(isLoading: boolean) {

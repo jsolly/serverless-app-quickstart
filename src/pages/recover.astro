@@ -1,6 +1,10 @@
 ---
 import Navigation from "../components/Navigation.astro";
 import Layout from "../layouts/Layout.astro";
+
+const search = Astro.url.searchParams;
+const token = search.get("token");
+const type = search.get("type");
 ---
 
 <Layout title="Reset Password">
@@ -25,6 +29,15 @@ import Layout from "../layouts/Layout.astro";
         <p class="text-sm text-gray-600 mb-6">Choose a strong password for your account.</p>
 
         <form id="reset-form" class="space-y-4">
+          <!-- Hidden email field for accessibility and password managers -->
+          <input 
+            type="email" 
+            name="email" 
+            id="email" 
+            autocomplete="username"
+            style="display: none;"
+            aria-hidden="true"
+          />
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">New password</label>
             <input 
@@ -65,13 +78,60 @@ import Layout from "../layouts/Layout.astro";
   </div>
 </Layout>
 
-<script lang="ts" define:vars={{ supabaseUrl: import.meta.env.SUPABASE_URL, supabaseAnonKey: import.meta.env.SUPABASE_ANON_KEY }}>
+<script>
   import { createClient } from '@supabase/supabase-js';
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
 
+  // Get DOM elements first
   const form = document.getElementById('reset-form') as HTMLFormElement;
-  const messageDiv = document.getElementById('message');
+  const messageDiv = document.getElementById('message') as HTMLDivElement;
+
+  // Check for error parameters in URL hash (from Supabase redirect)
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const error = hashParams.get('error');
+  const errorCode = hashParams.get('error_code');
+  
+  if (error === 'access_denied' && errorCode === 'otp_expired') {
+    showMessage('This password reset link has expired.', 'error', true);
+    // Hide the form since the token is invalid
+    if (form) {
+      form.style.display = 'none';
+    }
+  } else {
+    // Handle normal token verification from query parameters
+    const search = new URLSearchParams(window.location.search);
+    const token = search.get('token');
+    const type = search.get('type');
+
+    if (token && type === 'recovery') {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: token,
+        type: 'recovery'
+      });
+
+      if (error) {
+        console.error('Token verification failed:', error);
+        showMessage('Invalid or expired reset link.', 'error', true);
+        // Hide the form since the token is invalid
+        if (form) {
+          form.style.display = 'none';
+        }
+      } else {
+        // Get user info to populate hidden email field
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email) {
+          const emailInput = document.getElementById('email') as HTMLInputElement;
+          if (emailInput) {
+            emailInput.value = user.email;
+          }
+        }
+      }
+    }
+  }
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -95,7 +155,6 @@ import Layout from "../layouts/Layout.astro";
     if (error) {
       console.error('Password update failed:', error);
       
-      // Map known safe error codes to user-friendly messages
       let userMessage = 'Failed to update password. Please try again.';
       if (error.message?.includes('weak password') || error.message?.includes('password')) {
         userMessage = 'Password does not meet security requirements. Please choose a stronger password.';
@@ -105,14 +164,50 @@ import Layout from "../layouts/Layout.astro";
       return;
     }
 
-    showMessage('Password updated! You can now sign in with your new password.', 'success');
-    form.reset();
+    showMessage('Password updated! Redirecting to sign in...', 'success');
+    
+    // Add manual redirect button
+    setTimeout(() => {
+      const messageDiv = document.getElementById('message');
+      if (messageDiv) {
+        messageDiv.innerHTML = `
+          <div class="bg-green-50 text-green-700 p-4 rounded-md">
+            <div class="flex items-center justify-between">
+              <div>
+                <strong>Password updated!</strong> You can now sign in with your new password.
+              </div>
+              <a href="/" class="ml-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                Sign In Now
+              </a>
+            </div>
+          </div>
+        `;
+      }
+    }, 500);
+    
+    // Auto-redirect to sign-in page after 3 seconds
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 3000);
   });
 
-  function showMessage(text: string, type: 'success' | 'error') {
+  function showMessage(text: string, type: 'success' | 'error', showForgotLink = false) {
     if (!messageDiv) return;
-    messageDiv.textContent = text;
-    messageDiv.className = `mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
+    
+    if (showForgotLink) {
+      messageDiv.innerHTML = `
+        <div class="bg-red-50 text-red-700 p-4 rounded-md">
+          <div class="mb-2">${text}</div>
+          <a href="/forgot" class="inline-flex items-center text-sm font-medium text-red-700 hover:text-red-800 underline">
+            Request a new password reset
+          </a>
+        </div>
+      `;
+    } else {
+      messageDiv.textContent = text;
+      messageDiv.className = `mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
+    }
+    
     messageDiv.classList.remove('hidden');
   }
 </script>

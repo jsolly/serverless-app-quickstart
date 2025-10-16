@@ -14,11 +14,19 @@ const isAuthenticated = !!user;
 const search = Astro.url.searchParams;
 const errorCode = search.get("error");
 const emailPrefill = search.get("email") ?? "";
+
+// Handle password reset redirects
+const token = search.get("token");
+const type = search.get("type");
+if (token && type === "recovery") {
+  // Redirect to recover page with the token
+  return Astro.redirect(`/recover?token=${token}&type=${type}`);
+}
 ---
 
 <Layout title="Serverless App Quickstart" description="A modern serverless application template built with Astro and Supabase">
   <div class="min-h-screen bg-white">
-    <Navigation user={user} />
+    <Navigation user={user || undefined} />
     
     {!isAuthenticated ? (
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -20,18 +20,18 @@ A serverless web application template built with Astro, deployed on Vercel, with
 Create a `.env.local` file in the root directory with the following variables:
 
 ```env
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your_supabase_anon_key
+PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 DATABASE_URL=postgresql://postgres.your-project:your-password@aws-0-us-east-1.pooler.supabase.com:6543/postgres
 ```
 
 **Where to find these:**
-- `SUPABASE_URL` and `SUPABASE_ANON_KEY`: Supabase Dashboard → Project Settings → API
+- `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY`: Supabase Dashboard → Project Settings → API (PUBLIC_ prefix makes them available in browser)
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase Dashboard → Project Settings → API (under "Service role")
 - `DATABASE_URL`: Supabase Dashboard → Project Settings → Database → Connection String → Transaction mode (pooler)
 
-**Note:** `DATABASE_URL` is only needed for running the database setup script. The application itself uses `SUPABASE_URL` and the auth keys.
+**Note:** `DATABASE_URL` is only needed for running the database setup script. The application itself uses the Supabase URL and auth keys.
 
 **Security Note:** The `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security. Never expose it on the client side. It's only used in server-side API endpoints.
 
@@ -139,8 +139,8 @@ This project is configured for Vercel serverless deployment using the `@astrojs/
 **Environment Variables on Vercel:**
 
 Add these environment variables in your Vercel project settings:
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
+- `PUBLIC_SUPABASE_URL`
+- `PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 **Deploy via GitHub:**

@@ -13,10 +13,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			return new Response("Email is required", { status: 400 });
 		}
 
-		// Ensure no double slashes in redirect URL
-		const baseUrl =
-			import.meta.env.SITE_URL?.replace(/\/$/, "") || "http://localhost:4321";
-		const redirectTo = `${baseUrl}/recover`;
+		const redirectTo = `${import.meta.env.SITE_URL}/recover`;
 
 		const { error } = await supabase.auth.resetPasswordForEmail(email, {
 			redirectTo,
@@ -24,6 +21,25 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 		if (error) {
 			console.error("Password reset request failed:", error);
+
+			if (error.message && typeof error.message === "string") {
+				const match = error.message.match(
+					/you can only request this after (\d+) seconds?/i,
+				);
+				if (match) {
+					const seconds = match[1];
+					return new Response(
+						JSON.stringify({
+							error: `For security purposes, you must wait ${seconds} more seconds before requesting to reset your password`,
+						}),
+						{
+							status: error.status || 429,
+							headers: { "Content-Type": "application/json" },
+						},
+					);
+				}
+			}
+
 			return createErrorResponse(error, {
 				fallbackMessage: "Failed to request password reset",
 			});
