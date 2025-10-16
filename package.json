@@ -17,7 +17,7 @@
 		"update": "npx npm-check-updates -u && npm install"
 	},
 	"lint-staged": {
-		"*.{ts,tsx,js,jsx,json,css,md,yml,yaml}": [
+		"**/*.{ts,tsx,json,css,md,astro,html}": [
 			"biome check --write --no-errors-on-unmatched"
 		]
 	},
