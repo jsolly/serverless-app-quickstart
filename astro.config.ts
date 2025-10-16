@@ -10,6 +10,11 @@ if (!SITE_URL && process.env.NODE_ENV === "development") {
 	SITE_URL = loadEnv("development", process.cwd(), "").SITE_URL;
 }
 
+// Use placeholder URL in CI environments (builds are for validation only, not deployment)
+if (!SITE_URL && process.env.CI === "true") {
+	SITE_URL = "https://example.com";
+}
+
 if (!SITE_URL) {
 	throw new Error("SITE_URL environment variable is required");
 }
