@@ -1,6 +1,39 @@
 ---
 import Navigation from "../components/Navigation.astro";
 import Layout from "../layouts/Layout.astro";
+
+const search = Astro.url.searchParams;
+const success = search.get("success");
+const error = search.get("error");
+const seconds = search.get("seconds");
+
+let message = "";
+let messageType: "success" | "error" | null = null;
+
+if (success === "true") {
+	message = "If an account exists for that email, a reset link has been sent.";
+	messageType = "success";
+} else if (error) {
+	messageType = "error";
+	switch (error) {
+		case "email_required":
+			message = "Email is required";
+			break;
+		case "server_error":
+			message = "Server configuration error. Please try again later.";
+			break;
+		case "rate_limit":
+			message = seconds
+				? `For security purposes, you must wait ${seconds} more seconds before requesting to reset your password`
+				: "You've made too many password reset requests. Please try again later";
+			break;
+		case "failed":
+			message = "Failed to request password reset. Please try again.";
+			break;
+		default:
+			message = "An unexpected error occurred. Please try again.";
+	}
+}
 ---
 
 <Layout title="Forgot Password">
@@ -24,7 +57,13 @@ import Layout from "../layouts/Layout.astro";
         <h1 class="text-2xl font-bold text-gray-900 mb-2">Forgot your password?</h1>
         <p class="text-sm text-gray-600 mb-6">Enter your email and we'll send you a link to reset your password.</p>
 
-        <form id="forgot-form" class="space-y-4" action="/api/auth/forgot-password" method="post">
+        {message && (
+          <div class={`mb-4 p-4 rounded-md ${messageType === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+            {message}
+          </div>
+        )}
+
+        <form class="space-y-4" action="/api/auth/forgot-password" method="post">
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
             <input 
@@ -38,68 +77,15 @@ import Layout from "../layouts/Layout.astro";
             />
           </div>
           <button 
-            type="submit" 
-            id="submit-button"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition-colors cursor-pointer"
           >
-            <svg id="spinner" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span id="button-text">Send reset link</span>
+            Send reset link
           </button>
         </form>
-
-        <div id="message" class="hidden mt-4 p-4 rounded-md"></div>
       </div>
     </div>
   </div>
 </Layout>
-
-<script>
-  const form = document.getElementById('forgot-form') as HTMLFormElement;
-  const messageDiv = document.getElementById('message');
-  const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
-  const spinner = document.getElementById('spinner');
-  const buttonText = document.getElementById('button-text');
-
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    setLoading(true);
-    
-    try {
-      const formData = new FormData(form);
-      const response = await fetch(form.action, { method: 'POST', body: formData });
-
-      if (response.status === 204) {
-        showMessage('If an account exists for that email, a reset link has been sent.', 'success');
-        form.reset();
-        return;
-      }
-
-      const data = await response.json();
-      showMessage(data.error || 'Failed to request password reset', 'error');
-    } catch (error) {
-      showMessage('An unexpected error occurred. Please try again.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  });
-
-  function setLoading(isLoading: boolean) {
-    if (!submitButton || !spinner || !buttonText) return;
-    submitButton.disabled = isLoading;
-    spinner.classList.toggle('hidden', !isLoading);
-    buttonText.textContent = isLoading ? 'Sending...' : 'Send reset link';
-  }
-
-  function showMessage(text: string, type: 'success' | 'error') {
-    if (!messageDiv) return;
-    messageDiv.textContent = text;
-    messageDiv.className = `mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
-    messageDiv.classList.remove('hidden');
-  }
-</script>
 
 

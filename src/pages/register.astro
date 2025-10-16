@@ -1,6 +1,24 @@
 ---
 import Navigation from "../components/Navigation.astro";
 import Layout from "../layouts/Layout.astro";
+
+const search = Astro.url.searchParams;
+const error = search.get("error");
+
+let message = "";
+
+if (error) {
+	switch (error) {
+		case "missing_fields":
+			message = "Email and password are required";
+			break;
+		case "failed":
+			message = "Failed to register account. Please try again.";
+			break;
+		default:
+			message = "An unexpected error occurred. Please try again.";
+	}
+}
 ---
 
 <Layout title="Register">
@@ -27,6 +45,17 @@ import Layout from "../layouts/Layout.astro";
           Already have an account? <a href="/" class="font-medium text-blue-600 hover:text-blue-500">Sign in</a>
         </p>
       </div>
+
+      {message && (
+        <div class="rounded-md bg-red-50 p-4">
+          <div class="flex">
+            <div class="ml-0">
+              <h3 class="text-sm font-medium text-red-800">{message}</h3>
+            </div>
+          </div>
+        </div>
+      )}
+
       <form class="mt-8 space-y-6" action="/api/auth/register" method="post">
         <div class="rounded-md shadow-sm -space-y-px">
           <div>

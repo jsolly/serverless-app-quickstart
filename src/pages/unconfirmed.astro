@@ -1,7 +1,30 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
-const email = Astro.url.searchParams.get("email");
+const search = Astro.url.searchParams;
+const email = search.get("email");
+const success = search.get("success");
+const error = search.get("error");
+
+let message = "";
+let messageType: "success" | "error" | null = null;
+
+if (success === "true") {
+	message = "Verification email sent! Check your inbox.";
+	messageType = "success";
+} else if (error) {
+	messageType = "error";
+	switch (error) {
+		case "email_required":
+			message = "No email address found";
+			break;
+		case "failed":
+			message = "Failed to send email. Please try again.";
+			break;
+		default:
+			message = "An unexpected error occurred. Please try again.";
+	}
+}
 ---
 
 <Layout title="Verify Your Email" description="Please verify your email address to continue">
@@ -47,14 +70,23 @@ const email = Astro.url.searchParams.get("email");
           </div>
         </div>
 
+        {message && (
+          <div class={`p-4 rounded-md ${messageType === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+            {message}
+          </div>
+        )}
+
         <div class="space-y-4">
-          <button
-            id="resend-btn"
-            type="button"
-            class="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Resend verification email
-          </button>
+          <form id="resend-form" action="/api/auth/resend-verification" method="post">
+            <input type="hidden" name="email" value={email || ""} />
+            <button
+              id="resend-btn"
+              type="submit"
+              class="group relative w-full flex justify-center py-2 px-4 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Resend verification email
+            </button>
+          </form>
           
           <div class="text-center">
             <a
@@ -65,8 +97,6 @@ const email = Astro.url.searchParams.get("email");
             </a>
           </div>
         </div>
-
-        <div id="resend-message" class="hidden p-4 rounded-md"></div>
       </div>
     </div>
   </div>
@@ -74,49 +104,32 @@ const email = Astro.url.searchParams.get("email");
 
 <script>
   const resendBtn = document.getElementById('resend-btn') as HTMLButtonElement;
-  const messageDiv = document.getElementById('resend-message');
+  const resendForm = document.getElementById('resend-form') as HTMLFormElement;
   const email = new URLSearchParams(window.location.search).get('email');
-  let cooldownTimer: NodeJS.Timeout | null = null;
+  let cooldownTimer: ReturnType<typeof setInterval> | null = null;
 
-  // Initialize button state
-  setButtonCooldown(30);
+  const COOLDOWN_KEY = 'resend-verification-cooldown';
+  const COOLDOWN_DURATION = 30;
 
-  resendBtn?.addEventListener('click', async () => {
-    if (!email) {
-      showMessage('No email address found', 'error');
+  function initializeCooldown() {
+    const lastSentStr = localStorage.getItem(COOLDOWN_KEY);
+    
+    if (!lastSentStr) {
+      setButtonCooldown(COOLDOWN_DURATION);
       return;
     }
 
-    if (resendBtn.disabled) {
-      return;
+    const lastSent = Number.parseInt(lastSentStr, 10);
+    const elapsed = Math.floor((Date.now() - lastSent) / 1000);
+    const remaining = COOLDOWN_DURATION - elapsed;
+
+    if (remaining > 0) {
+      setButtonCooldown(remaining);
     }
+  }
 
-    resendBtn.disabled = true;
-    resendBtn.textContent = 'Sending...';
-
-    try {
-      const response = await fetch('/api/auth/resend-verification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error('Resend verification failed:', data.error);
-        throw new Error('Failed to resend verification email');
-      }
-
-      showMessage('Verification email sent! Check your inbox.', 'success');
-      setButtonCooldown(30);
-    } catch (error) {
-      console.error('Resend verification error:', error);
-      showMessage('Failed to send email. Please try again.', 'error');
-      setButtonCooldown(5); // Shorter cooldown on error
-    }
+  resendForm?.addEventListener('submit', () => {
+    localStorage.setItem(COOLDOWN_KEY, Date.now().toString());
   });
 
   function setButtonCooldown(seconds: number) {
@@ -134,24 +147,16 @@ const email = Astro.url.searchParams.get("email");
       } else {
         resendBtn.disabled = false;
         resendBtn.textContent = 'Resend verification email';
-        clearInterval(cooldownTimer!);
-        cooldownTimer = null;
+        if (cooldownTimer) {
+          clearInterval(cooldownTimer);
+          cooldownTimer = null;
+        }
       }
     };
 
-    updateButton(); // Initial update
+    updateButton();
     cooldownTimer = setInterval(updateButton, 1000);
   }
 
-  function showMessage(text: string, type: 'success' | 'error') {
-    if (!messageDiv) return;
-
-    messageDiv.textContent = text;
-    messageDiv.className = `p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
-    messageDiv.classList.remove('hidden');
-
-    setTimeout(() => {
-      messageDiv.classList.add('hidden');
-    }, 5000);
-  }
+  initializeCooldown();
 </script>

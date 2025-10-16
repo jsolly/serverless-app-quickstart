@@ -57,6 +57,15 @@ if (token && type === "recovery") {
                 </div>
               </div>
             )}
+            {errorCode === "missing_fields" && (
+              <div class="mb-4 rounded-md bg-red-50 p-4">
+                <div class="flex">
+                  <div class="ml-0">
+                    <h3 class="text-sm font-medium text-red-800">Email and password are required</h3>
+                  </div>
+                </div>
+              </div>
+            )}
             <form class="space-y-6" action="/api/auth/signin" method="post">
               <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>

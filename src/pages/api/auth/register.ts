@@ -1,5 +1,4 @@
 import type { APIRoute } from "astro";
-import { createErrorResponse } from "../../../lib/api-errors";
 import { createSupabaseServerClient } from "../../../lib/supabase";
 
 export const POST: APIRoute = async ({ request, redirect }) => {
@@ -10,7 +9,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
 	const password = formData.get("password")?.toString();
 
 	if (!email || !password) {
-		return new Response("Email and password are required", { status: 400 });
+		return redirect("/register?error=missing_fields");
 	}
 
 	const { error } = await supabase.auth.signUp({
@@ -20,9 +19,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
 
 	if (error) {
 		console.error("User registration failed:", error);
-		return createErrorResponse(error, {
-			fallbackMessage: "Failed to register account",
-		});
+		return redirect("/register?error=failed");
 	}
 
 	return redirect(`/unconfirmed?email=${encodeURIComponent(email)}`);

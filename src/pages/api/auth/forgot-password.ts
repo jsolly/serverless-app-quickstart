@@ -1,8 +1,7 @@
 import type { APIRoute } from "astro";
-import { createErrorResponse } from "../../../lib/api-errors";
 import { createSupabaseServerClient } from "../../../lib/supabase";
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, redirect }) => {
 	const supabase = createSupabaseServerClient();
 
 	try {
@@ -10,13 +9,13 @@ export const POST: APIRoute = async ({ request }) => {
 		const email = formData.get("email")?.toString();
 
 		if (!email) {
-			return new Response("Email is required", { status: 400 });
+			return redirect("/forgot?error=email_required");
 		}
 
 		const siteUrl = import.meta.env.SITE_URL;
 		if (!siteUrl) {
 			console.error("SITE_URL environment variable is not configured");
-			return new Response("Server configuration error", { status: 500 });
+			return redirect("/forgot?error=server_error");
 		}
 
 		const redirectTo = new URL("/recover", siteUrl).toString();
@@ -30,26 +29,18 @@ export const POST: APIRoute = async ({ request }) => {
 
 			if (error.status === 429) {
 				const seconds = error.message?.match(/(\d+)\s+seconds?/)?.[1];
-				const waitMessage = seconds
-					? `For security purposes, you must wait ${seconds} more seconds before requesting to reset your password`
-					: "You've made too many password reset requests. Please try again later";
-
-				return createErrorResponse(
-					{ message: waitMessage, status: 429 },
-					{ fallbackMessage: "Failed to request password reset" },
-				);
+				if (seconds) {
+					return redirect(`/forgot?error=rate_limit&seconds=${seconds}`);
+				}
+				return redirect("/forgot?error=rate_limit");
 			}
 
-			return createErrorResponse(error, {
-				fallbackMessage: "Failed to request password reset",
-			});
+			return redirect("/forgot?error=failed");
 		}
 
-		return new Response(null, { status: 204 });
+		return redirect("/forgot?success=true");
 	} catch (error) {
 		console.error("Password reset request failed:", error);
-		return createErrorResponse(error, {
-			fallbackMessage: "Failed to request password reset",
-		});
+		return redirect("/forgot?error=failed");
 	}
 };
