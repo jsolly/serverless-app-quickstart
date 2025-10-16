@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Setup Supabase database for the serverless app
+# Apply database schema from users-table.sql to Supabase
 # This script creates the users table and sets up RLS policies
 #
 # Usage:
-#   ./db/setup-database.sh
+#   ./db/apply-schema.sh
 #
 # Prerequisites:
 #   - .env.local file with DATABASE_URL

@@ -10,7 +10,6 @@
 		"prepare": "if [ -z \"$CI\" ]; then husky; fi",
 		"test:unit": "vitest --no-watch -t 'unit'",
 		"check:ts": "tsc --noEmit",
-		"check:iac": "terraform validate",
 		"check:biome": "biome check --write --no-errors-on-unmatched",
 		"fix": "npm run check:biome && npm run check:ts",
 		"outdated": "npm outdated",
