@@ -24,8 +24,7 @@ echo -e "${GREEN}Setting up Supabase database...${NC}"
 if [ ! -f ".env.local" ]; then
     echo -e "${RED}Error: .env.local file not found${NC}"
     echo "Please create .env.local with your Supabase credentials:"
-    echo "SUPABASE_URL=your_supabase_url"
-    echo "SUPABASE_ANON_KEY=your_supabase_anon_key"
+    echo "DATABASE_URL=postgresql://postgres:password@host:5432/database"
     exit 1
 fi
 
