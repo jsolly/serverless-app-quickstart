@@ -32,7 +32,6 @@ import Layout from "../layouts/Layout.astro";
             id="email" 
             autocomplete="username"
             style="display: none;"
-            aria-hidden="true"
           />
           <div>
             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">New password</label>
@@ -162,7 +161,6 @@ import Layout from "../layouts/Layout.astro";
 
     // Disable form to prevent resubmission
     submitButton.disabled = true;
-    form.style.pointerEvents = 'none';
 
     showMessage('Password updated! Redirecting to sign in...', 'success');
     

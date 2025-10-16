@@ -10,7 +10,9 @@ if (!SITE_URL && process.env.NODE_ENV === "development") {
 	SITE_URL = loadEnv("development", process.cwd(), "").SITE_URL;
 }
 
-// Use placeholder URL in CI environments (builds are for validation only, not deployment)
+// Use placeholder URL in CI environments (builds are for validation only, not deployment).
+// The placeholder URL allows build validation without breaking CI pipelines while still
+// enabling sitemap generation and URL validation in the build process.
 if (!SITE_URL && process.env.CI === "true") {
 	SITE_URL = "https://example.com";
 }
