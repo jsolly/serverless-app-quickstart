@@ -13,7 +13,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			return new Response("Email is required", { status: 400 });
 		}
 
-		const redirectTo = `${import.meta.env.SITE_URL}/recover`;
+		const siteUrl = import.meta.env.SITE_URL;
+		if (!siteUrl) {
+			console.error("SITE_URL environment variable is not configured");
+			return new Response("Server configuration error", { status: 500 });
+		}
+
+		const redirectTo = new URL("/recover", siteUrl).toString();
 
 		const { error } = await supabase.auth.resetPasswordForEmail(email, {
 			redirectTo,
@@ -22,22 +28,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		if (error) {
 			console.error("Password reset request failed:", error);
 
-			if (error.message && typeof error.message === "string") {
-				const match = error.message.match(
-					/you can only request this after (\d+) seconds?/i,
+			if (error.status === 429) {
+				const seconds = error.message?.match(/(\d+)\s+seconds?/)?.[1];
+				const waitMessage = seconds
+					? `For security purposes, you must wait ${seconds} more seconds before requesting to reset your password`
+					: "You've made too many password reset requests. Please try again later";
+
+				return createErrorResponse(
+					{ message: waitMessage, status: 429 },
+					{ fallbackMessage: "Failed to request password reset" },
 				);
-				if (match) {
-					const seconds = match[1];
-					return new Response(
-						JSON.stringify({
-							error: `For security purposes, you must wait ${seconds} more seconds before requesting to reset your password`,
-						}),
-						{
-							status: error.status || 429,
-							headers: { "Content-Type": "application/json" },
-						},
-					);
-				}
 			}
 
 			return createErrorResponse(error, {

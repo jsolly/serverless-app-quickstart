@@ -68,19 +68,23 @@ import Layout from "../layouts/Layout.astro";
     
     setLoading(true);
     
-    const formData = new FormData(form);
-    const response = await fetch(form.action, { method: 'POST', body: formData });
+    try {
+      const formData = new FormData(form);
+      const response = await fetch(form.action, { method: 'POST', body: formData });
 
-    setLoading(false);
+      if (response.status === 204) {
+        showMessage('If an account exists for that email, a reset link has been sent.', 'success');
+        form.reset();
+        return;
+      }
 
-    if (response.status === 204) {
-      showMessage('If an account exists for that email, a reset link has been sent.', 'success');
-      form.reset();
-      return;
+      const data = await response.json();
+      showMessage(data.error || 'Failed to request password reset', 'error');
+    } catch (error) {
+      showMessage('An unexpected error occurred. Please try again.', 'error');
+    } finally {
+      setLoading(false);
     }
-
-    const data = await response.json();
-    showMessage(data.error || 'Failed to request password reset', 'error');
   });
 
   function setLoading(isLoading: boolean) {

@@ -1,10 +1,6 @@
 ---
 import Navigation from "../components/Navigation.astro";
 import Layout from "../layouts/Layout.astro";
-
-const search = Astro.url.searchParams;
-const token = search.get("token");
-const type = search.get("type");
 ---
 
 <Layout title="Reset Password">
@@ -163,6 +159,10 @@ const type = search.get("type");
       showMessage(userMessage, 'error');
       return;
     }
+
+    // Disable form to prevent resubmission
+    submitButton.disabled = true;
+    form.style.pointerEvents = 'none';
 
     showMessage('Password updated! Redirecting to sign in...', 'success');
     

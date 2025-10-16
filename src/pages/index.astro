@@ -20,7 +20,9 @@ const token = search.get("token");
 const type = search.get("type");
 if (token && type === "recovery") {
 	// Redirect to recover page with the token
-	return Astro.redirect(`/recover?token=${token}&type=${type}`);
+	return Astro.redirect(
+		`/recover?token=${encodeURIComponent(token)}&type=${encodeURIComponent(type)}`,
+	);
 }
 ---
 

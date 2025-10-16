@@ -2,9 +2,17 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import vercel from "@astrojs/vercel";
-import { loadEnv } from "vite"; // Astro doesn't support process.env directly
+import { loadEnv } from "vite";
 
-const { SITE_URL } = loadEnv(process.env.NODE_ENV!, process.cwd(), "");
+let SITE_URL = process.env.SITE_URL;
+
+if (!SITE_URL && process.env.NODE_ENV === "development") {
+	SITE_URL = loadEnv("development", process.cwd(), "").SITE_URL;
+}
+
+if (!SITE_URL) {
+	throw new Error("SITE_URL environment variable is required");
+}
 
 // https://astro.build/config
 export default defineConfig({
