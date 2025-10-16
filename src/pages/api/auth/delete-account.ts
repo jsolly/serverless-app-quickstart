@@ -7,7 +7,7 @@ import {
 import { createUserService } from "../../../lib/users";
 
 export const DELETE: APIRoute = async ({ cookies, redirect }) => {
-	const supabase = createSupabaseServerClient(cookies);
+	const supabase = createSupabaseServerClient();
 	const users = createUserService(supabase, cookies);
 	const authUser = await users.getCurrentUser();
 

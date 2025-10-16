@@ -94,7 +94,7 @@ import Layout from "../layouts/Layout.astro";
   } else {
     // Handle normal token verification from query parameters
     const search = new URLSearchParams(window.location.search);
-    const token = search.get('token_hash');
+    const token = search.get('token');
     const type = search.get('type');
 
     if (token && type === 'recovery') {

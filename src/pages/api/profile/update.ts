@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from "../../../lib/supabase";
 import { createUserService } from "../../../lib/users";
 
 export const PATCH: APIRoute = async ({ request, cookies }) => {
-	const supabase = createSupabaseServerClient(cookies);
+	const supabase = createSupabaseServerClient();
 	const users = createUserService(supabase, cookies);
 	const authUser = await users.getCurrentUser();
 

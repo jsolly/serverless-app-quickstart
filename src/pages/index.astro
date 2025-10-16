@@ -7,7 +7,7 @@ import Layout from "../layouts/Layout.astro";
 import { createSupabaseServerClient } from "../lib/supabase";
 import { createUserService } from "../lib/users";
 
-const supabase = createSupabaseServerClient(Astro.cookies);
+const supabase = createSupabaseServerClient();
 const users = createUserService(supabase, Astro.cookies);
 const user = await users.getCurrentUser();
 const isAuthenticated = !!user;

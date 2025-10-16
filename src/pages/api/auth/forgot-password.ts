@@ -2,8 +2,8 @@ import type { APIRoute } from "astro";
 import { createErrorResponse } from "../../../lib/api-errors";
 import { createSupabaseServerClient } from "../../../lib/supabase";
 
-export const POST: APIRoute = async ({ request, cookies }) => {
-	const supabase = createSupabaseServerClient(cookies);
+export const POST: APIRoute = async ({ request }) => {
+	const supabase = createSupabaseServerClient();
 
 	try {
 		const formData = await request.formData();
