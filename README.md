@@ -1,6 +1,6 @@
 # App Quickstart ⚡️
 
-A serverless web application template built with Astro, deployed on Vercel, with Supabase authentication and PostgreSQL database.
+A serverless web application template built with AstroJS, deployed on Vercel, with Supabase authentication and PostgreSQL database.
 
 ## Dependencies
 
