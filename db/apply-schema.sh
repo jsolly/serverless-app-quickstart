@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Setup Supabase database for the serverless app
+# Apply database schema from users-table.sql to Supabase
 # This script creates the users table and sets up RLS policies
 #
 # Usage:
-#   ./db/setup-database.sh
+#   ./db/apply-schema.sh
 #
 # Prerequisites:
 #   - .env.local file with DATABASE_URL
@@ -24,13 +24,14 @@ echo -e "${GREEN}Setting up Supabase database...${NC}"
 if [ ! -f ".env.local" ]; then
     echo -e "${RED}Error: .env.local file not found${NC}"
     echo "Please create .env.local with your Supabase credentials:"
-    echo "SUPABASE_URL=your_supabase_url"
-    echo "SUPABASE_ANON_KEY=your_supabase_anon_key"
+    echo "DATABASE_URL=postgresql://postgres:password@host:5432/database"
     exit 1
 fi
 
 # Load environment variables
-export $(cat .env.local | grep -v '^#' | xargs)
+set -a
+source .env.local
+set +a
 
 # Check if required environment variables are set
 if [ -z "$DATABASE_URL" ]; then
@@ -39,24 +40,18 @@ if [ -z "$DATABASE_URL" ]; then
     exit 1
 fi
 
-DB_URL="$DATABASE_URL"
-
 echo -e "${GREEN}Connecting to database...${NC}"
 
-# Drop existing table and recreate (for development)
 echo -e "${YELLOW}Dropping existing users table...${NC}"
-psql "$DB_URL" -c "DROP TABLE IF EXISTS users CASCADE;" || true
+psql "$DATABASE_URL" -c "DROP TABLE IF EXISTS users CASCADE;"
 
-# Execute the SQL
-if psql "$DB_URL" -f "db/users-table.sql"; then
+if psql "$DATABASE_URL" -f "db/users-table.sql"; then
     echo -e "${GREEN}✅ Database setup completed successfully!${NC}"
     echo -e "${GREEN}Users table created with RLS policies and triggers.${NC}"
 else
     echo -e "${RED}❌ Database setup failed${NC}"
     exit 1
 fi
-
-# No cleanup needed since we're using the existing SQL file
 
 echo -e "${GREEN}🎉 Setup complete! You can now test registration.${NC}"
 

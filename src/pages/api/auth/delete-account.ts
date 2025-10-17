@@ -5,16 +5,13 @@ import {
 } from "../../../lib/supabase";
 import { createUserService } from "../../../lib/users";
 
-export const DELETE: APIRoute = async ({ cookies, redirect }) => {
-	const supabase = createSupabaseServerClient(cookies);
+export const POST: APIRoute = async ({ cookies, redirect }) => {
+	const supabase = createSupabaseServerClient();
 	const users = createUserService(supabase, cookies);
 	const authUser = await users.getCurrentUser();
 
 	if (!authUser) {
-		return new Response(JSON.stringify({ error: "Unauthorized" }), {
-			status: 401,
-			headers: { "Content-Type": "application/json" },
-		});
+		return redirect("/");
 	}
 
 	try {
@@ -31,9 +28,6 @@ export const DELETE: APIRoute = async ({ cookies, redirect }) => {
 		return redirect("/");
 	} catch (error) {
 		console.error("Account deletion failed:", error);
-		return new Response(JSON.stringify({ error: "Failed to delete account" }), {
-			status: 500,
-			headers: { "Content-Type": "application/json" },
-		});
+		return redirect("/profile?error=delete_failed");
 	}
 };

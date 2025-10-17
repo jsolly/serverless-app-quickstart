@@ -1,24 +1,34 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Navigation from "../components/Navigation.astro";
-import Hero from "../components/Hero.astro";
-import Features from "../components/Features.astro";
 import CTA from "../components/CTA.astro";
+import Features from "../components/Features.astro";
+import Hero from "../components/Hero.astro";
+import Navigation from "../components/Navigation.astro";
+import Layout from "../layouts/Layout.astro";
 import { createSupabaseServerClient } from "../lib/supabase";
 import { createUserService } from "../lib/users";
 
-const supabase = createSupabaseServerClient(Astro.cookies);
+const supabase = createSupabaseServerClient();
 const users = createUserService(supabase, Astro.cookies);
 const user = await users.getCurrentUser();
 const isAuthenticated = !!user;
 const search = Astro.url.searchParams;
 const errorCode = search.get("error");
 const emailPrefill = search.get("email") ?? "";
+
+// Handle password reset redirects
+const token = search.get("token");
+const type = search.get("type");
+if (token && type === "recovery") {
+	// Redirect to recover page with the token
+	return Astro.redirect(
+		`/recover?token=${encodeURIComponent(token)}&type=${encodeURIComponent(type)}`,
+	);
+}
 ---
 
 <Layout title="Serverless App Quickstart" description="A modern serverless application template built with Astro and Supabase">
   <div class="min-h-screen bg-white">
-    <Navigation user={user} />
+    <Navigation user={user || undefined} />
     
     {!isAuthenticated ? (
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,6 +53,15 @@ const emailPrefill = search.get("email") ?? "";
                     <div class="mt-2 text-sm text-red-700">
                       <p>Please check your credentials and try again.</p>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            {errorCode === "missing_fields" && (
+              <div class="mb-4 rounded-md bg-red-50 p-4">
+                <div class="flex">
+                  <div class="ml-0">
+                    <h3 class="text-sm font-medium text-red-800">Email and password are required</h3>
                   </div>
                 </div>
               </div>

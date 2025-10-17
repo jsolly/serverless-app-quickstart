@@ -2,44 +2,32 @@ import type { APIRoute } from "astro";
 import { createSupabaseServerClient } from "../../../lib/supabase";
 import { createUserService } from "../../../lib/users";
 
-export const PATCH: APIRoute = async ({ request, cookies }) => {
-	const supabase = createSupabaseServerClient(cookies);
+export const POST: APIRoute = async ({ request, cookies, redirect }) => {
+	const supabase = createSupabaseServerClient();
 	const users = createUserService(supabase, cookies);
 	const authUser = await users.getCurrentUser();
 
 	if (!authUser) {
-		return new Response(JSON.stringify({ error: "Unauthorized" }), {
-			status: 401,
-			headers: { "Content-Type": "application/json" },
-		});
+		return redirect("/");
 	}
 
 	try {
-		const body = await request.json();
-		const { bio } = body;
+		const formData = await request.formData();
+		const bio = formData.get("bio")?.toString();
 
 		const currentUser = await users.getById(authUser.id);
 
 		if (bio === undefined || bio === currentUser.bio) {
-			return new Response(JSON.stringify({ message: "No changes to update" }), {
-				status: 200,
-				headers: { "Content-Type": "application/json" },
-			});
+			return redirect("/profile?info=no_changes");
 		}
 
-		const updatedUser = await users.update(authUser.id, {
+		await users.update(authUser.id, {
 			bio: bio || null,
 		});
 
-		return new Response(JSON.stringify({ user: updatedUser }), {
-			status: 200,
-			headers: { "Content-Type": "application/json" },
-		});
+		return redirect("/profile?success=true");
 	} catch (error) {
 		console.error("Profile update failed:", error);
-		return new Response(JSON.stringify({ error: "Failed to update profile" }), {
-			status: 500,
-			headers: { "Content-Type": "application/json" },
-		});
+		return redirect("/profile?error=failed");
 	}
 };

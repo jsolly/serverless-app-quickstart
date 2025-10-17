@@ -1,6 +1,8 @@
 ---
+import type { User } from "@supabase/supabase-js";
+
 interface Props {
-  user?: any;
+	user?: User;
 }
 
 const { user } = Astro.props;

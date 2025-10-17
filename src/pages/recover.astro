@@ -1,6 +1,6 @@
 ---
-import Layout from "../layouts/Layout.astro";
 import Navigation from "../components/Navigation.astro";
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Reset Password">
@@ -68,12 +68,51 @@ import Navigation from "../components/Navigation.astro";
 <script>
   import { createClient } from '@supabase/supabase-js';
 
-  const supabaseUrl = import.meta.env.SUPABASE_URL as string;
-  const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY as string;
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
 
+  const MESSAGE_UPDATE_DELAY = 500;
+  const AUTO_REDIRECT_DELAY = 3000;
+
+  // Get DOM elements first
   const form = document.getElementById('reset-form') as HTMLFormElement;
-  const messageDiv = document.getElementById('message');
+  const messageDiv = document.getElementById('message') as HTMLDivElement;
+
+  // Check for error parameters in URL hash (from Supabase redirect)
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const error = hashParams.get('error');
+  const errorCode = hashParams.get('error_code');
+  
+  if (error === 'access_denied' && errorCode === 'otp_expired') {
+    showMessage('This password reset link has expired.', 'error', true);
+    // Hide the form since the token is invalid
+    if (form) {
+      form.style.display = 'none';
+    }
+  } else {
+    // Handle normal token verification from query parameters
+    const search = new URLSearchParams(window.location.search);
+    const token = search.get('token');
+    const type = search.get('type');
+
+    if (token && type === 'recovery') {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: token,
+        type: 'recovery'
+      });
+
+      if (error) {
+        console.error('Token verification failed:', error);
+        showMessage('Invalid or expired reset link.', 'error', true);
+        // Hide the form since the token is invalid
+        if (form) {
+          form.style.display = 'none';
+        }
+      }
+    }
+  }
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -97,7 +136,6 @@ import Navigation from "../components/Navigation.astro";
     if (error) {
       console.error('Password update failed:', error);
       
-      // Map known safe error codes to user-friendly messages
       let userMessage = 'Failed to update password. Please try again.';
       if (error.message?.includes('weak password') || error.message?.includes('password')) {
         userMessage = 'Password does not meet security requirements. Please choose a stronger password.';
@@ -107,14 +145,72 @@ import Navigation from "../components/Navigation.astro";
       return;
     }
 
-    showMessage('Password updated! You can now sign in with your new password.', 'success');
-    form.reset();
+    // Disable form to prevent resubmission
+    submitButton.disabled = true;
+
+    showMessage('Password updated! Redirecting to sign in...', 'success');
+    
+    // Add manual redirect button
+    setTimeout(() => {
+      if (!messageDiv) return;
+      
+      messageDiv.innerHTML = '';
+      
+      const container = document.createElement('div');
+      container.className = 'bg-green-50 text-green-700 p-4 rounded-md';
+      
+      const flexContainer = document.createElement('div');
+      flexContainer.className = 'flex items-center justify-between';
+      
+      const textContainer = document.createElement('div');
+      const strong = document.createElement('strong');
+      strong.textContent = 'Password updated!';
+      textContainer.appendChild(strong);
+      textContainer.appendChild(document.createTextNode(' You can now sign in with your new password.'));
+      
+      const link = document.createElement('a');
+      link.href = '/';
+      link.className = 'ml-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors';
+      link.textContent = 'Sign In Now';
+      
+      flexContainer.appendChild(textContainer);
+      flexContainer.appendChild(link);
+      container.appendChild(flexContainer);
+      messageDiv.appendChild(container);
+    }, MESSAGE_UPDATE_DELAY);
+    
+    // Auto-redirect to sign-in page after 3 seconds
+    setTimeout(() => {
+      window.location.href = '/';
+    }, AUTO_REDIRECT_DELAY);
   });
 
-  function showMessage(text: string, type: 'success' | 'error') {
+  function showMessage(text: string, type: 'success' | 'error', showForgotLink = false) {
     if (!messageDiv) return;
-    messageDiv.textContent = text;
-    messageDiv.className = `mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
+    
+    messageDiv.innerHTML = '';
+    
+    if (showForgotLink) {
+      const container = document.createElement('div');
+      container.className = 'bg-red-50 text-red-700 p-4 rounded-md';
+      
+      const textDiv = document.createElement('div');
+      textDiv.className = 'mb-2';
+      textDiv.textContent = text;
+      
+      const link = document.createElement('a');
+      link.href = '/forgot';
+      link.className = 'inline-flex items-center text-sm font-medium text-red-700 hover:text-red-800 underline';
+      link.textContent = 'Request a new password reset';
+      
+      container.appendChild(textDiv);
+      container.appendChild(link);
+      messageDiv.appendChild(container);
+    } else {
+      messageDiv.textContent = text;
+      messageDiv.className = `mt-4 p-4 rounded-md ${type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
+    }
+    
     messageDiv.classList.remove('hidden');
   }
 </script>

@@ -20,18 +20,19 @@ A serverless web application template built with Astro, deployed on Vercel, with
 Create a `.env.local` file in the root directory with the following variables:
 
 ```env
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your_supabase_anon_key
+PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 DATABASE_URL=postgresql://postgres.your-project:your-password@aws-0-us-east-1.pooler.supabase.com:6543/postgres
+SITE_URL=http://localhost:4321
 ```
 
 **Where to find these:**
-- `SUPABASE_URL` and `SUPABASE_ANON_KEY`: Supabase Dashboard → Project Settings → API
+- `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY`: Supabase Dashboard → Project Settings → API (the PUBLIC_ prefix makes them available in the browser)
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase Dashboard → Project Settings → API (under "Service role")
 - `DATABASE_URL`: Supabase Dashboard → Project Settings → Database → Connection String → Transaction mode (pooler)
-
-**Note:** `DATABASE_URL` is only needed for running the database setup script. The application itself uses `SUPABASE_URL` and the auth keys.
+- `SITE_URL`: Must be a full URL including the protocol scheme. Use `http://localhost:4321` for local development or `https://yourdomain.com` for production.
+**Note:** `DATABASE_URL` is only needed for running the database setup script. The application itself uses the Supabase URL and auth keys.
 
 **Security Note:** The `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security. Never expose it on the client side. It's only used in server-side API endpoints.
 
@@ -40,7 +41,7 @@ DATABASE_URL=postgresql://postgres.your-project:your-password@aws-0-us-east-1.po
 Run the database setup script to create the users table with triggers and RLS policies:
 
 ```bash
-./db/setup-database.sh
+./db/apply-schema.sh
 ```
 
 This creates:
@@ -54,7 +55,7 @@ This creates:
 ```text
 /
 ├── public/
-│   └── favicons/           # Favicon files
+│   └── favicons/
 ├── src/
 │   ├── components/         # Reusable Astro components
 │   │   ├── Navigation.astro
@@ -75,13 +76,13 @@ This creates:
 │   │   ├── dashboard.astro
 │   │   └── profile.astro
 │   ├── styles/
-│   │   └── global.css      # Global styles
+│   │   └── global.css
 │   └── types/
 │       └── database.ts     # TypeScript types for database
 ├── tests/                  # Vitest unit tests
 ├── db/                     # Database setup scripts
 │   ├── users-table.sql
-│   └── setup-database.sh
+│   └── apply-schema.sh
 ├── astro.config.ts         # Astro + Vercel configuration
 ├── biome.jsonc             # Linter/formatter config
 ├── tsconfig.json
@@ -93,8 +94,6 @@ This creates:
 - 👤 User profile management
 - 🎨 Modern UI with Tailwind CSS
 - 🚀 Serverless deployment on Vercel
-- ✅ Type-safe database queries
-- 🧪 Pre-configured testing setup
 
 To learn more about the folder structure of an Astro project, refer to [Astro's guide on project structure](https://docs.astro.build/en/basics/project-structure/).
 
@@ -110,7 +109,6 @@ All commands are run from the root of the project, from a terminal:
 | `npm run preview`        | Preview your build locally, before deploying     |
 | `npm run test:unit`      | Run unit tests with Vitest                       |
 | `npm run check:ts`       | Run TypeScript type checking                     |
-| `npm run check:iac`      | Run Terraform validation                         |
 | `npm run check:biome`    | Run Biome linter and formatter (auto-fix)        |
 | `npm run fix`            | Run linter + type checking (fixes what it can)   |
 | `npm run outdated`       | Check for outdated packages                      |
@@ -139,8 +137,8 @@ This project is configured for Vercel serverless deployment using the `@astrojs/
 **Environment Variables on Vercel:**
 
 Add these environment variables in your Vercel project settings:
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
+- `PUBLIC_SUPABASE_URL`
+- `PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 **Deploy via GitHub:**
@@ -155,89 +153,3 @@ Add these environment variables in your Vercel project settings:
 npm i -g vercel
 vercel --prod
 ```
-
-### 🔓 Disable Vercel Deployment Protection (Production)
-
-**Important:** By default, Vercel may enable Deployment Protection (SSO Authentication) which blocks access to all resources, including static assets like favicons and manifests, causing 401 errors.
-
-**To fix this:**
-
-1. Go to your Vercel project settings:
-   ```
-   https://vercel.com/[your-team]/[your-project]/settings/deployment-protection
-   ```
-
-2. Under **Vercel Authentication**, change the setting to:
-   - **"Preview Deployments Only"** (recommended) - Keeps preview branches protected while making production public
-   - **"Standard Protection"** - Protects all domains except Production Custom Domains
-   - **"Disabled"** - Completely turns off protection
-
-3. Save changes - takes effect immediately
-
-**Why disable for production?**
-- Your app needs to be publicly accessible
-- Static assets (favicons, images, manifests) must load without authentication
-- Your application handles its own authentication via Supabase
-- Vercel protection is meant for internal/staging environments, not public websites
-
-**Recommended:** Keep protection enabled for preview deployments to secure your work-in-progress branches.
-
-### 🌐 Adding a Custom Domain (Cloudflare)
-
-**Step 1: Add Domain in Vercel**
-
-1. Go to your Vercel project → **Settings** → **Domains**
-2. Add your domain (e.g., `yourdomain.com` and `www.yourdomain.com`)
-3. Vercel will provide DNS records
-
-**Step 2: Configure DNS in Cloudflare**
-
-1. Log into Cloudflare and select your domain
-2. Go to **DNS** → **Records**
-3. Add the DNS records provided by Vercel:
-
-   **For apex domain (yourdomain.com):**
-   ```
-   Type: A
-   Name: @
-   Value: 76.76.21.21
-   Proxy status: DNS only (gray cloud)
-   ```
-
-   **For www subdomain:**
-   ```
-   Type: CNAME
-   Name: www
-   Value: cname.vercel-dns.com
-   Proxy status: DNS only (gray cloud)
-   ```
-
-4. **Important:** Turn off Cloudflare proxy (gray cloud icon) initially
-   - Vercel needs to verify domain ownership
-   - After verification, you can optionally enable proxy (orange cloud)
-
-**Step 3: Wait for DNS Propagation**
-
-- DNS changes typically take 5-30 minutes
-- Vercel will automatically verify and issue SSL certificates
-- You can check status in Vercel's Domains settings
-
-**Step 4: (Optional) Enable Cloudflare Proxy**
-
-After Vercel verifies the domain and SSL is active:
-1. Return to Cloudflare DNS settings
-2. Click the gray cloud icon to enable proxy (turns orange)
-3. This enables Cloudflare's CDN and DDoS protection
-
-**Troubleshooting:**
-- If domain won't verify, ensure Cloudflare proxy is disabled (gray cloud)
-- Check that you're using the correct DNS records from Vercel
-- Wait at least 24 hours for full DNS propagation before troubleshooting
-
-## Additional Resources
-
-[Astro documentation](https://docs.astro.build)
-
-[Biome documentation](https://biomejs.dev/guides/getting-started/)
-
-[Discord server](https://astro.build/chat)

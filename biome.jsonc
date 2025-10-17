@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.2.6/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -9,9 +9,31 @@
 	"files": {
 		"ignoreUnknown": true,
 		"includes": [
-			"src/**/*.{ts,tsx,json,css,html,md}",
+			"src/**/*.{ts,tsx,json,css,html,md,astro}",
 			"tests/**/*.{ts,tsx,json}",
 			"{package.json,tsconfig.json,biome.jsonc,vitest.config.ts,vite.config.ts,*.md}"
 		]
-	}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.astro"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedVariables": "off",
+						"noUnusedImports": "off"
+					},
+					"suspicious": {
+						"noExplicitAny": "warn"
+					}
+				}
+			}
+		}
+	]
 }

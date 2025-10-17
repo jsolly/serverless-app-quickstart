@@ -1,19 +1,41 @@
 ---
-import Layout from "../layouts/Layout.astro";
 import Navigation from "../components/Navigation.astro";
+import Layout from "../layouts/Layout.astro";
 import { createSupabaseServerClient } from "../lib/supabase";
 import { createUserService } from "../lib/users";
 
-const supabase = createSupabaseServerClient(Astro.cookies);
+const supabase = createSupabaseServerClient();
 const users = createUserService(supabase, Astro.cookies);
 
 const authUser = await users.getCurrentUser();
 
 if (!authUser) {
-  return Astro.redirect("/");
+	return Astro.redirect("/");
 }
 
 const user = await users.getById(authUser.id);
+
+const search = Astro.url.searchParams;
+const success = search.get("success");
+const info = search.get("info");
+const error = search.get("error");
+
+let message = "";
+let messageType: "success" | "error" | "info" | null = null;
+
+if (success === "true") {
+	message = "Profile updated successfully!";
+	messageType = "success";
+} else if (info === "no_changes") {
+	message = "No changes to update";
+	messageType = "info";
+} else if (error === "failed") {
+	message = "Failed to update profile. Please try again.";
+	messageType = "error";
+} else if (error === "delete_failed") {
+	message = "Failed to delete account. Please try again.";
+	messageType = "error";
+}
 ---
 
 <Layout title="Profile" description="Edit your profile">
@@ -38,10 +60,17 @@ const user = await users.getById(authUser.id);
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Profile</h1>
         <p class="text-gray-600 mb-8">Update your profile information</p>
 
-        <div id="error-message" class="hidden mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md"></div>
-        <div id="success-message" class="hidden mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md"></div>
+        {message && (
+          <div class={`mb-6 p-4 rounded-md ${
+            messageType === "success" ? "bg-green-50 border border-green-200 text-green-700" :
+            messageType === "info" ? "bg-blue-50 border border-blue-200 text-blue-700" :
+            "bg-red-50 border border-red-200 text-red-700"
+          }`}>
+            {message}
+          </div>
+        )}
 
-        <form id="profile-form" class="space-y-6">
+        <form id="profile-form" action="/api/profile/update" method="post" class="space-y-6">
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
               Email
@@ -86,129 +115,46 @@ const user = await users.getById(authUser.id);
         <h2 class="text-xl font-bold text-red-600 mb-2">Danger Zone</h2>
         <p class="text-gray-600 mb-6">Once you delete your account, there is no going back. Please be certain.</p>
         
-        <button
-          id="delete-account-btn"
-          type="button"
-          class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer"
-        >
-          Delete Account
-        </button>
+        <form id="delete-form" action="/api/auth/delete-account" method="post">
+          <button
+            type="submit"
+            class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer"
+          >
+            Delete Account
+          </button>
+        </form>
       </div>
     </div>
   </div>
 </Layout>
 
 <script>
-  const form = document.getElementById('profile-form') as HTMLFormElement;
-  const errorDiv = document.getElementById('error-message');
-  const successDiv = document.getElementById('success-message');
-  const deleteBtn = document.getElementById('delete-account-btn');
-
-  // Track form changes for unsaved changes warning
+  const profileForm = document.getElementById('profile-form') as HTMLFormElement;
+  const deleteForm = document.getElementById('delete-form') as HTMLFormElement;
   let hasUnsavedChanges = false;
-  let originalFormData: FormData;
 
-  // Store original form data
-  function storeOriginalData() {
-    originalFormData = new FormData(form);
-  }
+  profileForm?.addEventListener('input', () => {
+    hasUnsavedChanges = true;
+  });
 
-  // Check if form has been modified
-  function checkForChanges() {
-    const currentFormData = new FormData(form);
+  profileForm?.addEventListener('submit', () => {
     hasUnsavedChanges = false;
-    
-    for (const [key, value] of originalFormData.entries()) {
-      if (currentFormData.get(key) !== value) {
-        hasUnsavedChanges = true;
-        break;
-      }
-    }
-  }
+  });
 
-  // Initialize form tracking
-  storeOriginalData();
-  form.addEventListener('input', checkForChanges);
-  form.addEventListener('change', checkForChanges);
-
-  // Warn before leaving with unsaved changes
   window.addEventListener('beforeunload', (e) => {
     if (hasUnsavedChanges) {
       e.preventDefault();
+      e.returnValue = '';
     }
   });
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    errorDiv?.classList.add('hidden');
-    successDiv?.classList.add('hidden');
-
-    const formData = new FormData(form);
-    const bio = formData.get('bio') as string;
-
-    try {
-      const response = await fetch('/api/profile/update', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ bio }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error('Profile update failed:', data.error);
-        throw new Error('Failed to update profile');
-      }
-
-      if (successDiv) {
-        successDiv.textContent = 'Profile updated successfully!';
-        successDiv.classList.remove('hidden');
-      }
-
-      // Reset unsaved changes flag and update original data
-      hasUnsavedChanges = false;
-      storeOriginalData();
-
-      setTimeout(() => {
-        successDiv?.classList.add('hidden');
-      }, 3000);
-    } catch (error) {
-      console.error('Profile update error:', error);
-      if (errorDiv) {
-        errorDiv.textContent = 'Failed to update profile. Please try again.';
-        errorDiv.classList.remove('hidden');
-      }
-    }
-  });
-
-  deleteBtn?.addEventListener('click', async () => {
+  deleteForm?.addEventListener('submit', (e) => {
     const confirmed = confirm(
       'Are you sure you want to delete your account? This action cannot be undone.'
     );
 
-    if (!confirmed) return;
-
-    try {
-      const response = await fetch('/api/auth/delete-account', {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        console.error('Account deletion failed:', data.error);
-        throw new Error('Failed to delete account');
-      }
-
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Account deletion error:', error);
-      if (errorDiv) {
-        errorDiv.textContent = 'Failed to delete account. Please try again.';
-        errorDiv.classList.remove('hidden');
-      }
+    if (!confirmed) {
+      e.preventDefault();
     }
   });
 </script>

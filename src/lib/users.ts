@@ -1,26 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AstroCookies } from "astro";
 
-interface User {
-	id: string;
-	email: string;
-	bio: string | null;
-	created_at: string;
-	updated_at: string;
-}
-
-interface Database {
-	public: {
-		Tables: {
-			users: {
-				Row: User;
-				Insert: Omit<User, "id" | "created_at" | "updated_at">;
-				Update: Partial<Omit<User, "id" | "created_at" | "updated_at">>;
-			};
-		};
-	};
-}
-
 export function createUserService(
 	supabase: SupabaseClient,
 	cookies: AstroCookies,
@@ -50,17 +30,6 @@ export function createUserService(
 			}
 		},
 
-		async create(userData: Database["public"]["Tables"]["users"]["Insert"]) {
-			const { data, error } = await supabase
-				.from("users")
-				.insert(userData)
-				.select()
-				.single();
-
-			if (error) throw error;
-			return data;
-		},
-
 		async getById(id: string) {
 			const { data, error } = await supabase
 				.from("users")
@@ -72,21 +41,7 @@ export function createUserService(
 			return data;
 		},
 
-		async getByEmail(email: string) {
-			const { data, error } = await supabase
-				.from("users")
-				.select("*")
-				.eq("email", email)
-				.single();
-
-			if (error) throw error;
-			return data;
-		},
-
-		async update(
-			id: string,
-			updates: Database["public"]["Tables"]["users"]["Update"],
-		) {
+		async update(id: string, updates: { bio?: string | null }) {
 			const { data, error } = await supabase
 				.from("users")
 				.update(updates)
@@ -96,12 +51,6 @@ export function createUserService(
 
 			if (error) throw error;
 			return data;
-		},
-
-		async delete(id: string) {
-			const { error } = await supabase.from("users").delete().eq("id", id);
-
-			if (error) throw error;
 		},
 	};
 }
