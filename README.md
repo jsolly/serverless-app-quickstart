@@ -13,11 +13,34 @@ A serverless web application template built with Astro, deployed on Vercel, with
 - [Husky](https://typicode.github.io/husky/) - Git hooks
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 
-## Setup
+## Development Setup
 
-### Environment Variables
+### 1. Clone and Install
 
-Create a `.env.local` file in the root directory with the following variables:
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/your-username/serverless-app-quickstart.git
+cd serverless-app-quickstart
+npm install
+```
+
+### 2. Create Supabase and Vercel Projects
+
+**Supabase:**
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Choose a project name, database password, and region
+3. Wait for the project to finish provisioning
+
+**Vercel:**
+1. Push your code to GitHub (if you haven't already)
+2. Go to [vercel.com](https://vercel.com) and import your repository
+3. Vercel will automatically detect the Astro framework
+4. Don't deploy yet - we'll add environment variables first
+
+### 3. Environment Variables
+
+**For local development**, create a `.env.local` file in the root directory with the following variables:
 
 ```env
 PUBLIC_SUPABASE_URL=https://your-project.supabase.co
@@ -36,7 +59,9 @@ SITE_URL=http://localhost:4321
 
 **Security Note:** The `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security. Never expose it on the client side. It's only used in server-side API endpoints.
 
-### Database Setup
+**For production deployment**, you'll add these same environment variables to Vercel in step 5 (except `DATABASE_URL`, which is only needed locally for the setup script).
+
+### 4. Database Setup
 
 Run the database setup script to create the users table with triggers and RLS policies:
 
@@ -50,12 +75,24 @@ This creates:
 - Automatic profile creation trigger on user signup
 - Automatic profile deletion trigger on user deletion
 
+### 5. Deploy to Vercel
+
+Add environment variables to your Vercel project and deploy:
+
+1. In your Vercel project settings (Settings → Environment Variables), add these:
+   - `PUBLIC_SUPABASE_URL` - Same value as in your `.env.local`
+   - `PUBLIC_SUPABASE_ANON_KEY` - Same value as in your `.env.local`
+   - `SUPABASE_SERVICE_ROLE_KEY` - Same value as in your `.env.local`
+   - `SITE_URL` - Your production URL (e.g., `https://yourdomain.com`)
+2. Trigger a deployment (push to your main branch or click "Redeploy" in Vercel)
+3. Vercel will automatically build and deploy your application
+
 ## 🚀 Project Structure
 
 ```text
 /
 ├── public/
-│   └── favicons/
+│   └── favicons/           # Favicon files
 ├── src/
 │   ├── components/         # Reusable Astro components
 │   │   ├── Navigation.astro
@@ -70,15 +107,25 @@ This creates:
 │   ├── pages/              # File-based routing
 │   │   ├── api/            # API endpoints
 │   │   │   ├── auth/       # Authentication endpoints
+│   │   │   │   ├── delete-account.ts
+│   │   │   │   ├── forgot-password.ts
+│   │   │   │   ├── register.ts
+│   │   │   │   ├── resend-verification.ts
+│   │   │   │   ├── signin.ts
+│   │   │   │   └── signout.ts
 │   │   │   └── profile/    # Profile management
+│   │   │       └── update.ts
 │   │   ├── index.astro     # Landing page
 │   │   ├── register.astro
+│   │   ├── forgot.astro
+│   │   ├── recover.astro
+│   │   ├── unconfirmed.astro
 │   │   ├── dashboard.astro
 │   │   └── profile.astro
 │   ├── styles/
-│   │   └── global.css
-│   └── types/
-│       └── database.ts     # TypeScript types for database
+│   │   └── safelist-tailwindcss.txt
+│   ├── global.css          # Global styles
+│   └── env.d.ts            # TypeScript environment types
 ├── tests/                  # Vitest unit tests
 ├── db/                     # Database setup scripts
 │   ├── users-table.sql
@@ -86,6 +133,7 @@ This creates:
 ├── astro.config.ts         # Astro + Vercel configuration
 ├── biome.jsonc             # Linter/formatter config
 ├── tsconfig.json
+├── env.example             # Environment variables template
 └── package.json
 ```
 
@@ -127,29 +175,3 @@ npm exec husky init
 ## Pre-commit Hook Configuration
 
 A pre-commit hook has been configured in `.husky/pre-commit` that runs biome check, tsc and astro check before each commit to format, lint and type check the code.
-
-## 🚢 Deployment
-
-### Deploying to Vercel
-
-This project is configured for Vercel serverless deployment using the `@astrojs/vercel` adapter.
-
-**Environment Variables on Vercel:**
-
-Add these environment variables in your Vercel project settings:
-- `PUBLIC_SUPABASE_URL`
-- `PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-
-**Deploy via GitHub:**
-1. Push your code to GitHub
-2. Import the repository in Vercel
-3. Vercel will automatically detect the Astro framework
-4. Add environment variables
-5. Deploy
-
-**Deploy via CLI:**
-```bash
-npm i -g vercel
-vercel --prod
-```
