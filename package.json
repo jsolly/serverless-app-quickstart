@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"@astrojs/vercel": "^8.2.10",
-		"@supabase/supabase-js": "^2.75.0"
+		"@supabase/supabase-js": "^2.76.1"
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.4",
